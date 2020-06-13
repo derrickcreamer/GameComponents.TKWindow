@@ -15,6 +15,16 @@ namespace GameComponents.TKWindow{
 		public float SpriteHeight; //0 to 1, not pixels //todo xml, explain all units
 		public float SpriteWidth;
 		public int DefaultSpriteIndex;
+		public float[] CalculatedX;
+		public float[] CalculatedY;
+		public void CalculateThroughIndex(int index){
+			CalculatedX = new float[index];
+			CalculatedY = new float[index];
+			for(int i=0;i<index;++i){
+				CalculatedX[i] = X(i);
+				CalculatedY[i] = Y(i);
+			}
+		}
 		public static SpriteType DefineSingleRowSprite(Surface surface,int sprite_width_px){
 			SpriteType s = new SpriteType();
 			float texcoord_width = (float)sprite_width_px * 1.0f / (float)surface.texture.TextureWidthPx;

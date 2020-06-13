@@ -237,10 +237,10 @@ namespace GameComponents.TKWindow{
 			defaults = new_defaults;
 		}
 		public void DefaultUpdate(){
-			SurfaceDefaults d = new SurfaceDefaults(defaults);
+			SurfaceDefaults d = new SurfaceDefaults(defaults);//todo check these for sanity
 			d.FillValues(true,true);
 			window.UpdatePositionVertexArray(this,d.positions,d.layouts);
-			window.UpdateOtherVertexArray(this,-1,d.sprites,d.sprite_types,d.other_data);
+			window.UpdateOtherVertexArray(this,-1,d.sprites,0,d.sprite_types,d.other_data);
 		}
 		public void DefaultUpdatePositions(){
 			SurfaceDefaults d = new SurfaceDefaults(defaults);
@@ -250,7 +250,7 @@ namespace GameComponents.TKWindow{
 		public void DefaultUpdateOtherData(){
 			SurfaceDefaults d = new SurfaceDefaults(defaults);
 			d.FillValues(false,true);
-			window.UpdateOtherVertexArray(this,-1,d.sprites,d.sprite_types,d.other_data);
+			window.UpdateOtherVertexArray(this,-1,d.sprites,0,d.sprite_types,d.other_data);
 		}
 		public void Update(){
 			if(UpdateMethod != null){
@@ -258,7 +258,7 @@ namespace GameComponents.TKWindow{
 				UpdateMethod(d);
 				d.FillValues(true,true);
 				window.UpdatePositionVertexArray(this,d.positions,d.layouts);
-				window.UpdateOtherVertexArray(this,-1,d.sprites,d.sprite_types,d.other_data);
+				window.UpdateOtherVertexArray(this,-1,d.sprites,0,d.sprite_types,d.other_data);
 			}
 		}
 		public void UpdatePositionsOnly(){
@@ -274,7 +274,7 @@ namespace GameComponents.TKWindow{
 				SurfaceDefaults d = new SurfaceDefaults(defaults);
 				UpdateOtherDataOnlyMethod(d);
 				d.FillValues(false,true);
-				window.UpdateOtherVertexArray(this,-1,d.sprites,d.sprite_types,d.other_data);
+				window.UpdateOtherVertexArray(this,-1,d.sprites,0,d.sprite_types,d.other_data);
 			}
 		}
 	}

@@ -305,22 +305,25 @@ namespace GameComponents.TKWindow{
 			GL.BindBuffer(BufferTarget.ArrayBuffer,s.vbo.PositionArrayBufferID);
 			GL.BufferSubData(BufferTarget.ArrayBuffer,new IntPtr(sizeof(float) * 4 * s.vbo.PositionDimensions * index),new IntPtr(sizeof(float) * values.Length),values);
 		}
-		public void UpdateOtherVertexArray(Surface s,IList<int> sprite_index,params IList<float>[] vertex_attributes){
-			UpdateOtherVertexArray(s,-1,sprite_index,new int[sprite_index.Count],vertex_attributes); //default to sprite type 0.
-		} //should I add more overloads here?
-		public void UpdateOtherVertexArray(Surface s,int start_index,IList<int> sprite_index,IList<int> sprite_type,params IList<float>[] vertex_attributes){
+		public void UpdateOtherVertexArray(Surface s,int start_index,IList<int> sprite_index,int single_sprite_type,IList<int> sprite_type,params IList<float>[] vertex_attributes){
 			int count = sprite_index.Count;
 			int a = s.vbo.VertexAttribs.TotalSize;
 			int a4 = a * 4;
 			if(start_index >= 0 && (start_index + count) * a4 > s.vbo.OtherDataSize && s.vbo.OtherDataSize > 0){
 				throw new ArgumentException("Error: (start_index + count) * total_attrib_size is bigger than VBO size. To always replace the previous data, set start_index to -1.");
 			}
-			SpriteType sprite = s.texture.Sprite[0];
+			SpriteType sprite = sprite_type != null? null : s.texture.Sprite[single_sprite_type];
+			float[] calculatedX = sprite.CalculatedX;
+			float[] calculatedY = sprite.CalculatedY;
 			float[] all_values = new float[count * a4];
 			for(int i=0;i<count;++i){
-				if(sprite_type != null) sprite = s.texture.Sprite[sprite_type[i]];
-				float tex_start_x = sprite.X(sprite_index[i]); //todo... have a way to calculate X and Y for a specific index range and never call these delegates.
-				float tex_start_y = sprite.Y(sprite_index[i]);
+				if(sprite_type != null){
+					sprite = s.texture.Sprite[sprite_type[i]];
+					calculatedX = sprite.CalculatedX;
+					calculatedY = sprite.CalculatedY;
+				}
+				float tex_start_x = calculatedX != null? calculatedX[sprite_index[i]] : sprite.X(sprite_index[i]);
+				float tex_start_y = calculatedY != null? calculatedY[sprite_index[i]] : sprite.Y(sprite_index[i]);
 				float tex_end_x = tex_start_x + sprite.SpriteWidth;
 				float tex_end_y = tex_start_y + sprite.SpriteHeight;
 				int ia4 = i*a4;
@@ -356,7 +359,6 @@ namespace GameComponents.TKWindow{
 					offset = 0;
 				}
 				GL.BufferSubData(BufferTarget.ArrayBuffer,new IntPtr(sizeof(float) * a4 * offset),new IntPtr(sizeof(float) * a4 * count),all_values);
-				//GL.BufferSubData(BufferTarget.ArrayBuffer,new IntPtr(0),new IntPtr(sizeof(float) * a4 * count),all_values);
 			}
 		}
 		public void UpdateOtherSingleVertex(Surface s,int index,int sprite_index,int sprite_type,params IList<float>[] vertex_attributes){

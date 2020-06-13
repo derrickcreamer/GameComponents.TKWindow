@@ -82,6 +82,7 @@ namespace Todo{
 			//Screen.textSurface = Surface.Create(Screen.gl, @"/home/void/Downloads/Iosevka-msdf.png",false,Shader.MsdfFS(),false,2,4,4);
 			//SpriteType.DefineSpriteAcross(Screen.textSurface, 28, 50, 51);
 			Screen.textSurface.texture.Sprite.Add(Get8x8FontSprite());
+			Screen.textSurface.texture.Sprite[0].CalculateThroughIndex(1000);
 			//Screen.textSurface.texture.Sprite.Add(GetFontSprite());
 			//SpriteType.DefineSingleRowSprite(Screen.textSurface, 2048);
 			CellLayout.CreateGrid(Screen.textSurface,ROWS, COLS, CELL_W, CELL_H,0,0);
@@ -112,6 +113,9 @@ namespace Todo{
             System.Diagnostics.Stopwatch timer = new System.Diagnostics.Stopwatch();
 			timer.Start();
 			int num = 10000;
+			while(num-- > 0){
+				SetGlyphs();
+			}
 			while(num-- > 0 && Screen.gl.WindowUpdate()){
 				Thread.Sleep(1);
 				if(Screen.gl.IsExiting || Screen.gl.KeyIsDown(Key.Escape)){
@@ -234,7 +238,7 @@ namespace Todo{
 				color_info[1][idx4 + 2] = 0.0f;//getNextBgColor();//0.2f + (float)(getNextColor() * 0.3f);
 				color_info[1][idx4 + 3] = 1.0f;//0.2f + (float)(getNextColor() * 0.3f);
 			}
-			Screen.gl.UpdateOtherVertexArray(Screen.textSurface, -1, sprite_cols, null, color_info);
+			Screen.gl.UpdateOtherVertexArray(Screen.textSurface, -1, sprite_cols, 0, null, color_info);
 		}
 		static void WorkingSetGlyphs(){
 			const int rows = 28;
@@ -257,7 +261,7 @@ namespace Todo{
 				color_info[1][idx4 + 2] = getNextBgColor();//0.2f + (float)(getNextColor() * 0.3f);
 				color_info[1][idx4 + 3] = 1.0f;//0.2f + (float)(getNextColor() * 0.3f);
 			}
-			Screen.gl.UpdateOtherVertexArray(Screen.textSurface, -1, sprite_cols, null, color_info);
+			Screen.gl.UpdateOtherVertexArray(Screen.textSurface, -1, sprite_cols, 0, null, color_info);
 		}
 			/*public static void UpdateGLBuffer(int start_row,int start_col,colorchar[,] array){
 				int array_h = array.GetLength(0);
