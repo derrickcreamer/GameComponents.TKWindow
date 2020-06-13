@@ -167,7 +167,7 @@ namespace GameComponents.TKWindow{
 			}
 			SwapBuffers();
 		}
-		public void UpdatePositionVertexArray(Surface s,int start_index,IList<int> index_list,int single_layout = 0, IList<int> layout_list = null){
+		public void UpdatePositionVertexArray(Surface s, IList<int> index_list, int start_index = -1, int single_layout = 0, IList<int> layout_list = null){
 			int count = index_list.Count;
 			float[] values = new float[count * 4 * s.vbo.PositionDimensions]; //2 or 3 dimensions for 4 vertices for each tile
 			int[] indices = null;
@@ -249,16 +249,17 @@ namespace GameComponents.TKWindow{
 				GL.BufferData(BufferTarget.ElementArrayBuffer,new IntPtr(sizeof(int)*indices.Length),indices,BufferUsageHint.StaticDraw);
 			}
 		}
-		public void UpdatePositionSingleVertex(Surface s,int index,int layout = 0){
+		public void UpdatePositionSingleVertex(Surface s,int index,int layout_index = 0){
 			float[] values = new float[4 * s.vbo.PositionDimensions]; //2 or 3 dimensions for 4 vertices
 			float width_ratio = 2.0f / (float)Viewport.Width;
 			float height_ratio = 2.0f / (float)Viewport.Height;
-			float x_offset = (float)s.layouts[layout].HorizontalOffsetPx;
-			float y_offset = (float)s.layouts[layout].VerticalOffsetPx;
-			float x_w = (float)s.layouts[layout].CellWidthPx;
-			float y_h = (float)s.layouts[layout].CellHeightPx;
-			float cellx = s.layouts[layout].X(index) + x_offset;
-			float celly = s.layouts[layout].Y(index) + y_offset;
+			CellLayout layout = s.layouts[layout_index];
+			float x_offset = (float)layout.HorizontalOffsetPx;
+			float y_offset = (float)layout.VerticalOffsetPx;
+			float x_w = (float)layout.CellWidthPx;
+			float y_h = (float)layout.CellHeightPx;
+			float cellx = layout.X(index) + x_offset;
+			float celly = layout.Y(index) + y_offset;
 			float x = cellx * width_ratio - 1.0f;
 			float y = celly * height_ratio - 1.0f;
 			float x_plus1 = (cellx + x_w) * width_ratio - 1.0f;
@@ -275,7 +276,7 @@ namespace GameComponents.TKWindow{
 			values[N*3] = x_plus1;
 			values[N*3 + 1] = y_plus1;
 			if(N == 3){
-				float z = s.layouts[layout].Z(index);
+				float z = layout.Z(index);
 				values[2] = z;
 				values[N + 2] = z;
 				values[N*2 + 2] = z;
@@ -285,7 +286,7 @@ namespace GameComponents.TKWindow{
 			GL.BindBuffer(BufferTarget.ArrayBuffer,s.vbo.PositionArrayBufferID);
 			GL.BufferSubData(BufferTarget.ArrayBuffer,new IntPtr(sizeof(float) * 4 * s.vbo.PositionDimensions * index),new IntPtr(sizeof(float) * values.Length),values);
 		}
-		public void UpdateOtherVertexArray(Surface s,int start_index,IList<int> sprite_index,int single_sprite_type,IList<int> sprite_type,params IList<float>[] vertex_attributes){
+		public void UpdateOtherVertexArray(Surface s, IList<int> sprite_index, IList<float>[] vertex_attributes, int start_index = -1, IList<int> sprite_type = null, int single_sprite_type = 0){
 			int count = sprite_index.Count;
 			int a = s.vbo.VertexAttribs.TotalSize;
 			int a4 = a * 4;
@@ -342,7 +343,7 @@ namespace GameComponents.TKWindow{
 				GL.BufferSubData(BufferTarget.ArrayBuffer,new IntPtr(sizeof(float) * a4 * offset),new IntPtr(sizeof(float) * a4 * count),all_values);
 			}
 		}
-		public void UpdateOtherSingleVertex(Surface s,int index,int sprite_index,int sprite_type,params IList<float>[] vertex_attributes){
+		public void UpdateOtherSingleVertex(Surface s, int index, int sprite_index, IList<float>[] vertex_attributes, int sprite_type = 0){
 			int a = s.vbo.VertexAttribs.TotalSize;
 			int a4 = a * 4;
 			float[] values = new float[a4];

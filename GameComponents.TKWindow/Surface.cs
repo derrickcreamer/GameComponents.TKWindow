@@ -239,26 +239,26 @@ namespace GameComponents.TKWindow{
 		public void DefaultUpdate(){
 			SurfaceDefaults d = new SurfaceDefaults(defaults);//todo check these for sanity
 			d.FillValues(true,true);
-			window.UpdatePositionVertexArray(this,-1,d.positions,0,d.layouts);
-			window.UpdateOtherVertexArray(this,-1,d.sprites,0,d.sprite_types,d.other_data);
+			window.UpdatePositionVertexArray(this, d.positions, layout_list: d.layouts);
+			window.UpdateOtherVertexArray(this, d.sprites, d.other_data, sprite_type: d.sprite_types);
 		}
 		public void DefaultUpdatePositions(){
 			SurfaceDefaults d = new SurfaceDefaults(defaults);
 			d.FillValues(true,false);
-			window.UpdatePositionVertexArray(this,-1,d.positions,0,d.layouts);
+			window.UpdatePositionVertexArray(this, d.positions, layout_list: d.layouts);
 		}
 		public void DefaultUpdateOtherData(){
 			SurfaceDefaults d = new SurfaceDefaults(defaults);
 			d.FillValues(false,true);
-			window.UpdateOtherVertexArray(this,-1,d.sprites,0,d.sprite_types,d.other_data);
+			window.UpdateOtherVertexArray(this, d.sprites, d.other_data, sprite_type: d.sprite_types);
 		}
 		public void Update(){
 			if(UpdateMethod != null){
 				SurfaceDefaults d = new SurfaceDefaults(defaults);
 				UpdateMethod(d);
 				d.FillValues(true,true);
-				window.UpdatePositionVertexArray(this,-1,d.positions,0,d.layouts);
-				window.UpdateOtherVertexArray(this,-1,d.sprites,0,d.sprite_types,d.other_data);
+				window.UpdatePositionVertexArray(this, d.positions, layout_list: d.layouts);
+				window.UpdateOtherVertexArray(this, d.sprites, d.other_data, sprite_type: d.sprite_types);
 			}
 		}
 		public void UpdatePositionsOnly(){
@@ -266,7 +266,7 @@ namespace GameComponents.TKWindow{
 				SurfaceDefaults d = new SurfaceDefaults(defaults);
 				UpdatePositionsOnlyMethod(d);
 				d.FillValues(true,false);
-				window.UpdatePositionVertexArray(this,-1,d.positions,0,d.layouts);
+				window.UpdatePositionVertexArray(this, d.positions, layout_list: d.layouts);
 			}
 		}
 		public void UpdateOtherDataOnly(){
@@ -274,7 +274,7 @@ namespace GameComponents.TKWindow{
 				SurfaceDefaults d = new SurfaceDefaults(defaults);
 				UpdateOtherDataOnlyMethod(d);
 				d.FillValues(false,true);
-				window.UpdateOtherVertexArray(this,-1,d.sprites,0,d.sprite_types,d.other_data);
+				window.UpdateOtherVertexArray(this, d.sprites, d.other_data, sprite_type: d.sprite_types);
 			}
 		}
 	}
