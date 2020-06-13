@@ -325,28 +325,27 @@ namespace GameComponents.TKWindow{
 				float tex_start_y = sprite.Y(sprite_index[i]);
 				float tex_end_x = tex_start_x + sprite.SpriteWidth;
 				float tex_end_y = tex_start_y + sprite.SpriteHeight;
-				float[] values = new float[a4];
-				values[0] = tex_start_x; //the 4 corners, texcoords:
-				values[1] = tex_end_y;
-				values[a] = tex_start_x;
-				values[a + 1] = tex_start_y;
-				values[a*2] = tex_end_x;
-				values[a*2 + 1] = tex_start_y;
-				values[a*3] = tex_end_x;
-				values[a*3 + 1] = tex_end_y;
+				int ia4 = i*a4;
+				all_values[ia4] = tex_start_x; //the 4 corners, texcoords:
+				all_values[ia4 + 1] = tex_end_y;
+				all_values[ia4 + a] = tex_start_x;
+				all_values[ia4 + a + 1] = tex_start_y;
+				all_values[ia4 + a*2] = tex_end_x;
+				all_values[ia4 + a*2 + 1] = tex_start_y;
+				all_values[ia4 + a*3] = tex_end_x;
+				all_values[ia4 + a*3 + 1] = tex_end_y;
 				int prev_total = 2;
 				for(int g=1;g<s.vbo.VertexAttribs.Size.Length;++g){ //starting at 1 because texcoords are already done
 					int attrib_size = s.vbo.VertexAttribs.Size[g];
 					for(int k=0;k<attrib_size;++k){
 						float attrib = vertex_attributes[g-1][k + i*attrib_size]; // -1 because the vertex_attributes array doesn't contain texcoords here in the update method.
-						values[prev_total + k] = attrib;
-						values[prev_total + k + a] = attrib;
-						values[prev_total + k + a*2] = attrib;
-						values[prev_total + k + a*3] = attrib;
+						all_values[ia4 + prev_total + k] = attrib;
+						all_values[ia4 + prev_total + k + a] = attrib;
+						all_values[ia4 + prev_total + k + a*2] = attrib;
+						all_values[ia4 + prev_total + k + a*3] = attrib;
 					}
 					prev_total += attrib_size;
 				}
-				values.CopyTo(all_values,i * a4); //todo, is this faster than using an offset?
 			}
 			GL.BindBuffer(BufferTarget.ArrayBuffer,s.vbo.OtherArrayBufferID);
 			if((start_index < 0 && s.vbo.OtherDataSize != a4 * count) || s.vbo.OtherDataSize == 0){

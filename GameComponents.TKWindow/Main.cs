@@ -97,14 +97,33 @@ namespace Todo{
 			Screen.gl.Visible = true;
 			SetGlyphs();
 			//SetupDisplace();
+			TestPerf();
 			while(Screen.gl.WindowUpdate()){
-				Thread.Sleep(50);
+				Thread.Sleep(10);
 				//Displace();
 				if(Screen.gl.IsExiting || Screen.gl.KeyIsDown(Key.Escape)){
 					Screen.gl.Close();
 					return;
 				}
 			}
+		}
+		static void TestPerf(){
+			Screen.gl.VSync = VSyncMode.Off;
+            System.Diagnostics.Stopwatch timer = new System.Diagnostics.Stopwatch();
+			timer.Start();
+			int num = 10000;
+			while(num-- > 0 && Screen.gl.WindowUpdate()){
+				Thread.Sleep(1);
+				if(Screen.gl.IsExiting || Screen.gl.KeyIsDown(Key.Escape)){
+					Screen.gl.Close();
+					return;
+				}
+				SetGlyphs();
+			}
+			timer.Stop();
+			Console.WriteLine(timer.ElapsedTicks);
+
+			//test 1 is the array copy...
 		}
 		/*static float[] x_f, y_f;
 		static int[] x_displace, y_displace;
