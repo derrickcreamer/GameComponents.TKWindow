@@ -85,7 +85,7 @@ namespace Todo{
 			Screen.textSurface.texture.Sprite[0].CalculateThroughIndex(1000);
 			//Screen.textSurface.texture.Sprite.Add(GetFontSprite());
 			//SpriteType.DefineSingleRowSprite(Screen.textSurface, 2048);
-			CellLayout.CreateGrid(Screen.textSurface,ROWS, COLS, CELL_W, CELL_H,0,0);
+			CellLayout.CreateGrid(Screen.textSurface, COLS, ROWS, CELL_W, CELL_H, 0, 0);
 			Screen.textSurface.SetEasyLayoutCounts(ROWS*COLS);
 			Screen.textSurface.DefaultUpdatePositions();
 			Screen.textSurface.SetDefaultSpriteType(0);
