@@ -315,12 +315,10 @@ namespace GameComponents.TKWindow{
 			if(start_index >= 0 && (start_index + count) * a4 > s.vbo.OtherDataSize && s.vbo.OtherDataSize > 0){
 				throw new ArgumentException("Error: (start_index + count) * total_attrib_size is bigger than VBO size. To always replace the previous data, set start_index to -1.");
 			}
-			if(sprite_type == null){
-				sprite_type = new int[sprite_index.Count];
-			}
+			SpriteType sprite = s.texture.Sprite[0];
 			float[] all_values = new float[count * a4];
 			for(int i=0;i<count;++i){
-				SpriteType sprite = s.texture.Sprite[sprite_type[i]]; //todo...a bool might be better than this method... declare 'sprite' outside and then have a bool OR check for null each time...
+				if(sprite_type != null) sprite = s.texture.Sprite[sprite_type[i]];
 				float tex_start_x = sprite.X(sprite_index[i]); //todo... have a way to calculate X and Y for a specific index range and never call these delegates.
 				float tex_start_y = sprite.Y(sprite_index[i]);
 				float tex_end_x = tex_start_x + sprite.SpriteWidth;

@@ -123,7 +123,7 @@ namespace Todo{
 			timer.Stop();
 			Console.WriteLine(timer.ElapsedTicks);
 
-			//test 1 is the array copy...
+			//test 2 is the array init for sprite type...
 		}
 		/*static float[] x_f, y_f;
 		static int[] x_displace, y_displace;
@@ -234,7 +234,7 @@ namespace Todo{
 				color_info[1][idx4 + 2] = 0.0f;//getNextBgColor();//0.2f + (float)(getNextColor() * 0.3f);
 				color_info[1][idx4 + 3] = 1.0f;//0.2f + (float)(getNextColor() * 0.3f);
 			}
-			Screen.gl.UpdateOtherVertexArray(Screen.textSurface, sprite_cols, color_info);
+			Screen.gl.UpdateOtherVertexArray(Screen.textSurface, -1, sprite_cols, null, color_info);
 		}
 		static void WorkingSetGlyphs(){
 			const int rows = 28;
@@ -257,7 +257,7 @@ namespace Todo{
 				color_info[1][idx4 + 2] = getNextBgColor();//0.2f + (float)(getNextColor() * 0.3f);
 				color_info[1][idx4 + 3] = 1.0f;//0.2f + (float)(getNextColor() * 0.3f);
 			}
-			Screen.gl.UpdateOtherVertexArray(Screen.textSurface, sprite_cols, color_info);
+			Screen.gl.UpdateOtherVertexArray(Screen.textSurface, -1, sprite_cols, null, color_info);
 		}
 			/*public static void UpdateGLBuffer(int start_row,int start_col,colorchar[,] array){
 				int array_h = array.GetLength(0);
