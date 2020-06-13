@@ -167,20 +167,6 @@ namespace GameComponents.TKWindow{
 			}
 			SwapBuffers();
 		}
-		/*public static void ReplaceTexture(int texture_unit,string filename){ //binds a texture to the given texture unit, replacing the texture that's already there
-			if(String.IsNullOrEmpty(filename)){
-				throw new ArgumentException(filename);
-			}
-			GL.ActiveTexture(TextureUnit.Texture0 + texture_unit);
-			int id = GL.GenTexture();
-			GL.BindTexture(TextureTarget.Texture2D,id);
-			Bitmap bmp = new Bitmap(filename);
-			BitmapData bmp_data = bmp.LockBits(new Rectangle(0,0,bmp.Width,bmp.Height),ImageLockMode.ReadOnly,System.Drawing.Imaging.PixelFormat.Format32bppArgb);
-			GL.TexImage2D(TextureTarget.Texture2D,0,PixelInternalFormat.Rgba,bmp_data.Width,bmp_data.Height,0,OpenTK.Graphics.OpenGL.PixelFormat.Bgra,PixelType.UnsignedByte,bmp_data.Scan0);
-			bmp.UnlockBits(bmp_data);
-			GL.TexParameter(TextureTarget.Texture2D,TextureParameterName.TextureMinFilter,(int)TextureMinFilter.Nearest);
-			GL.TexParameter(TextureTarget.Texture2D,TextureParameterName.TextureMagFilter,(int)TextureMagFilter.Nearest);
-		}*/
 		public void UpdatePositionVertexArray(Surface s,IList<int> index_list,IList<int> layout_list = null){
 			UpdatePositionVertexArray(s,-1,index_list,layout_list);
 		}
@@ -322,8 +308,9 @@ namespace GameComponents.TKWindow{
 					calculatedX = sprite.CalculatedX;
 					calculatedY = sprite.CalculatedY;
 				}
-				float tex_start_x = calculatedX != null? calculatedX[sprite_index[i]] : sprite.X(sprite_index[i]);
-				float tex_start_y = calculatedY != null? calculatedY[sprite_index[i]] : sprite.Y(sprite_index[i]);
+				int current_sprite_index = sprite_index[i];
+				float tex_start_x = calculatedX != null? calculatedX[current_sprite_index] : sprite.X(current_sprite_index);
+				float tex_start_y = calculatedY != null? calculatedY[current_sprite_index] : sprite.Y(current_sprite_index);
 				float tex_end_x = tex_start_x + sprite.SpriteWidth;
 				float tex_end_y = tex_start_y + sprite.SpriteHeight;
 				int ia4 = i*a4;
@@ -366,8 +353,8 @@ namespace GameComponents.TKWindow{
 			int a4 = a * 4;
 			float[] values = new float[a4];
 			SpriteType sprite = s.texture.Sprite[sprite_type];
-			float tex_start_x = sprite.X(sprite_index);
-			float tex_start_y = sprite.Y(sprite_index);
+			float tex_start_x = sprite.CalculatedX != null? sprite.CalculatedX[sprite_index] : sprite.X(sprite_index);
+			float tex_start_y = sprite.CalculatedY != null? sprite.CalculatedY[sprite_index] : sprite.Y(sprite_index);
 			float tex_end_x = tex_start_x + sprite.SpriteWidth;
 			float tex_end_y = tex_start_y + sprite.SpriteHeight;
 			values[0] = tex_start_x; //the 4 corners, texcoords:
