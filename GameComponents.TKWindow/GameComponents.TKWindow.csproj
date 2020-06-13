@@ -46,8 +46,16 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="GL.cs" />
     <Compile Include="Main.cs" />
+    <Compile Include="GLWindow.cs" />
+    <Compile Include="CellLayout.cs" />
+    <Compile Include="ResizeRules.cs" />
+    <Compile Include="Shader.cs" />
+    <Compile Include="ShaderCollection.cs" />
+    <Compile Include="SpriteType.cs" />
+    <Compile Include="Surface.cs" />
+    <Compile Include="Texture.cs" />
+    <Compile Include="VBO.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

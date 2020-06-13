@@ -1,4 +1,4 @@
-/*Copyright (c) 2011-2016  Derrick Creamer
+/*Copyright (c) 2011-2020  Derrick Creamer
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation
 files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish,
 distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
@@ -13,7 +13,7 @@ using System.IO;
 using System.Reflection;
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
-using GLDrawing;
+using GameComponents.TKWindow;
 using System.Threading;
 using OpenTK.Input;
 
@@ -80,7 +80,7 @@ namespace Todo{
 			//Screen.gl.ResizingPreference = ResizeOption.SnapWindow; Screen.gl.SnapHeight = Screen.gl.SnapWidth = 100;//todo //ResizeOption.StretchToFit;
 			//Screen.gl.ResizingFullScreenPreference = ResizeOption.AddBorder;
 			Screen.gl.FinalResize += Screen.gl.DefaultHandleResize;
-			Screen.textSurface = Surface.Create(Screen.gl, @"/home/void/Downloads/a-starry-msdf.png",false,Shader.GetMsdfFS(2048, 1),false,2,4,4);
+			Screen.textSurface = Surface.Create(Screen.gl, @"/home/void/Downloads/a-starry-msdf.png",false,ShaderCollection.GetMsdfFS(2048, 1),false,2,4,4);
 			//Screen.textSurface = Surface.Create(Screen.gl, @"/home/void/Downloads/PxPlus_IBM_VGA9-msdf_smaller.png",false,Shader.MsdfFS(),false,2,4,4);
 			//Screen.textSurface = Surface.Create(Screen.gl, @"/home/void/Downloads/Iosevka-msdf.png",false,Shader.MsdfFS(),false,2,4,4);
 			//SpriteType.DefineSpriteAcross(Screen.textSurface, 28, 50, 51);
@@ -286,7 +286,7 @@ namespace Todo{
 			//Screen.gl.ResizingPreference = ResizeOption.StretchToFit;
 			//Screen.gl.ResizingFullScreenPreference = ResizeOption.AddBorder;
 			Screen.gl.FinalResize += Screen.gl.DefaultHandleResize;
-			Screen.textSurface = Surface.Create(Screen.gl, @"/home/void/Downloads/PxPlus_IBM_VGA9-msdf_smaller.png",false,Shader.MsdfFS(),false,2,4,4);
+			Screen.textSurface = Surface.Create(Screen.gl, @"/home/void/Downloads/PxPlus_IBM_VGA9-msdf_smaller.png",false,ShaderCollection.MsdfFS(),false,2,4,4);
 			//Screen.textSurface = Surface.Create(Screen.gl, @"/home/void/Downloads/Iosevka-msdf.png",false,Shader.MsdfFS(),false,2,4,4);
 			//SpriteType.DefineSpriteAcross(Screen.textSurface, 24, 240,2);
 			SpriteType.DefineSingleRowSprite(Screen.textSurface, 2048);
