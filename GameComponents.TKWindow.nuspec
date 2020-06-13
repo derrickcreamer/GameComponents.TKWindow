@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+  <metadata>
+    <id>GameComponents.TKWindow</id>
+    <version>0.7</version>
+    <title>GameComponents TKWindow</title>
+    <authors>Derrick Creamer</authors>
+    <owners>Derrick Creamer</owners>
+    <!-- licenseUrl>https://raw.githubusercontent.com/derrickcreamer/Hemlock/master/LICENSE</licenseUrl -->
+    <license type="expression">MIT</license>
+    <projectUrl>https://github.com/derrickcreamer/GameComponents.TKWindow</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Classes designed to make working with OpenTK GameWindow easier</description>
+    <copyright>Copyright 2020</copyright>
+    <tags>c# csharp opentk</tags>
+    <dependencies>
+      <dependency id="OpenTK" version="3.1.0" />
+    </dependencies>
+    <references>
+      <reference file="GameComponents.TKWindow.dll" />
+    </references>
+  </metadata>
+  <files>
+    <file src="GameComponents.TKWindow/bin/Debug/GameComponents.TKWindow.dll" target="lib" />
+  </files>
+</package>
+
