@@ -167,14 +167,8 @@ namespace GameComponents.TKWindow{
 			}
 			SwapBuffers();
 		}
-		public void UpdatePositionVertexArray(Surface s,IList<int> index_list,IList<int> layout_list = null){
-			UpdatePositionVertexArray(s,-1,index_list,layout_list);
-		}
-		public void UpdatePositionVertexArray(Surface s,int start_index,IList<int> index_list,IList<int> layout_list = null){
+		public void UpdatePositionVertexArray(Surface s,int start_index,IList<int> index_list,int single_layout = 0, IList<int> layout_list = null){
 			int count = index_list.Count;
-			if(layout_list == null){
-				layout_list = new int[count]; //if not supplied, assume layout 0.
-			}
 			float[] values = new float[count * 4 * s.vbo.PositionDimensions]; //2 or 3 dimensions for 4 vertices for each tile
 			int[] indices = null;
 			if(start_index < 0 && s.vbo.NumElements != count * 6){
@@ -193,21 +187,23 @@ namespace GameComponents.TKWindow{
 			}
 			float width_ratio = 2.0f / (float)Viewport.Width;
 			float height_ratio = 2.0f / (float)Viewport.Height;
-			int current_total = 0;
-			foreach(int i in index_list){
-				float x_offset = (float)s.layouts[layout_list[current_total]].HorizontalOffsetPx;
-				float y_offset = (float)s.layouts[layout_list[current_total]].VerticalOffsetPx;
-				float x_w = (float)s.layouts[layout_list[current_total]].CellWidthPx;
-				float y_h = (float)s.layouts[layout_list[current_total]].CellHeightPx;
-				float cellx = s.layouts[layout_list[current_total]].X(i) + x_offset;
-				float celly = s.layouts[layout_list[current_total]].Y(i) + y_offset;
+			CellLayout layout = layout_list != null? null : s.layouts[single_layout];
+			for(int i=0;i<count;++i){
+				if(layout_list != null) layout = s.layouts[layout_list[i]];
+				float x_offset = (float)layout.HorizontalOffsetPx;
+				float y_offset = (float)layout.VerticalOffsetPx;
+				float x_w = (float)layout.CellWidthPx;
+				float y_h = (float)layout.CellHeightPx;
+				int current_index = index_list[i];
+				float cellx = layout.X(current_index) + x_offset;
+				float celly = layout.Y(current_index) + y_offset;
 				float x = cellx * width_ratio - 1.0f;
 				float y = celly * height_ratio - 1.0f;
 				float x_plus1 = (cellx + x_w) * width_ratio - 1.0f;
 				float y_plus1 = (celly + y_h) * height_ratio - 1.0f;
 
 				int N = s.vbo.PositionDimensions;
-				int idxN = current_total * 4 * N;
+				int idxN = i * 4 * N;
 
 				values[idxN] = x; //the 4 corners, flipped so it works with the inverted Y axis
 				values[idxN + 1] = y_plus1;
@@ -218,7 +214,7 @@ namespace GameComponents.TKWindow{
 				values[idxN + N*3] = x_plus1;
 				values[idxN + N*3 + 1] = y_plus1;
 				if(N == 3){
-					float z = s.layouts[layout_list[current_total]].Z(i);
+					float z = layout.Z(current_index);
 					values[idxN + 2] = z;
 					values[idxN + N + 2] = z;
 					values[idxN + N*2 + 2] = z;
@@ -226,8 +222,8 @@ namespace GameComponents.TKWindow{
 				}
 
 				if(indices != null){
-					int idx4 = current_total * 4;
-					int idx6 = current_total * 6;
+					int idx4 = i * 4;
+					int idx6 = i * 6;
 					indices[idx6] = idx4;
 					indices[idx6 + 1] = idx4 + 1;
 					indices[idx6 + 2] = idx4 + 2;
@@ -235,7 +231,6 @@ namespace GameComponents.TKWindow{
 					indices[idx6 + 4] = idx4 + 2;
 					indices[idx6 + 5] = idx4 + 3;
 				}
-				current_total++;
 			}
 			GL.BindBuffer(BufferTarget.ArrayBuffer,s.vbo.PositionArrayBufferID);
 			if((start_index < 0 && s.vbo.PositionDataSize != values.Length) || s.vbo.PositionDataSize == 0){
@@ -248,7 +243,6 @@ namespace GameComponents.TKWindow{
 					offset = 0;
 				}
 				GL.BufferSubData(BufferTarget.ArrayBuffer,new IntPtr(sizeof(float) * 4 * s.vbo.PositionDimensions * offset),new IntPtr(sizeof(float) * values.Length),values);
-				//GL.BufferSubData(BufferTarget.ArrayBuffer,new IntPtr(0),new IntPtr(sizeof(float) * values.Length),values);
 			}
 			if(indices != null){
 				GL.BindBuffer(BufferTarget.ElementArrayBuffer,s.vbo.ElementArrayBufferID);
