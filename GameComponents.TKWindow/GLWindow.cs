@@ -15,7 +15,7 @@ using OpenTK.Graphics.OpenGL;
 using OpenTK.Input;
 
 namespace GameComponents.TKWindow{
-	public class GLWindow : GameWindow{ public static List<string> log = new List<string>();
+	public class GLWindow : GameWindow{
 		public List<Surface> Surfaces = new List<Surface>();
 
 		// todo xml
@@ -45,7 +45,7 @@ namespace GameComponents.TKWindow{
 			GL.Viewport(x,y,width,height);
 		}
 
-		public GLWindow(int w,int h,string title) : base(w,h,GraphicsMode.Default,title){log.Add($"starting size {ClientRectangle.Width} by {ClientRectangle.Height}");
+		public GLWindow(int w,int h,string title) : base(w,h,GraphicsMode.Default,title){
 			VSync = VSyncMode.On;
 			GL.ClearColor(0.0f,0.0f,0.0f,0.0f);
 			GL.EnableVertexAttribArray(0); //these 2 attrib arrays are always on, for position and texcoords.
@@ -75,15 +75,10 @@ namespace GameComponents.TKWindow{
 		protected override void OnFocusedChanged(EventArgs e){
 			base.OnFocusedChanged(e);
 			if(Focused){
-				key_down[Key.AltLeft] = false; //i could simply reset the whole dictionary, too...
-				key_down[Key.AltRight] = false;
-				key_down[Key.ShiftLeft] = false;
-				key_down[Key.ShiftRight] = false;
-				key_down[Key.ControlLeft] = false;
-				key_down[Key.ControlRight] = false; // todo, any more (mod4?), or should I really clear the dictionary?
+				key_down.Clear();
 			}
 		}
-		protected override void OnResize(EventArgs e){log.Add($"OnResize called. Resizing is {Resizing}. Size {ClientRectangle.Width} by {ClientRectangle.Height}");
+		protected override void OnResize(EventArgs e){
 			Resizing = true;
 		}
 		protected override void OnWindowStateChanged(EventArgs e){
@@ -120,9 +115,9 @@ namespace GameComponents.TKWindow{
 			if(IsExiting){
 				return false;
 			}
-			if(Resizing){log.Add($"WindowUpdate while Resizing. Size {ClientRectangle.Width} by {ClientRectangle.Height}");
+			if(Resizing){
 				FinalResize?.Invoke();
-				Resizing = false;log.Add($"WindowUpdate Resize finished. Size {ClientRectangle.Width} by {ClientRectangle.Height}");
+				Resizing = false;
 			}
 			DrawSurfaces();
 			return true;
