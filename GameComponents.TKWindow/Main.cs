@@ -86,19 +86,15 @@ namespace Todo{
 			//Screen.textSurface.texture.Sprite.Add(GetFontSprite());
 			//SpriteType.DefineSingleRowSprite(Screen.textSurface, 2048);
 			CellLayout.CreateGrid(Screen.textSurface, COLS, ROWS, CELL_W, CELL_H, 0, 0);
-			Screen.textSurface.SetEasyLayoutCounts(ROWS*COLS);
-			Screen.textSurface.DefaultUpdatePositions();
-			Screen.textSurface.SetDefaultSpriteType(0);
-			Screen.textSurface.SetDefaultSprite(32);
-			Screen.textSurface.SetDefaultOtherData(new List<float>{0.6f, 0.6f,0.6f,0.6f},new List<float>{1f,1f,1f,1f});
-			Screen.textSurface.DefaultUpdateOtherData();
+			Screen.textSurface.InitializePositions(ROWS*COLS);
+			Screen.textSurface.InitializeOtherDataForSingleLayout(ROWS*COLS, 0, 32, new List<float>{0.6f, 0.6f,0.6f,0.6f},new List<float>{1f,1f,1f,1f});
 			//Screen.gl.Surfaces.Add(Screen.textSurface);
 			GL.Enable(EnableCap.Blend);
 			GL.BlendFunc(BlendingFactor.SrcAlpha,BlendingFactor.OneMinusSrcAlpha);
 			Screen.gl.Visible = true;
 			SetGlyphs();
 			//SetupDisplace();
-			TestPerf();
+			//TestPerf();
 			while(Screen.gl.WindowUpdate()){
 				Thread.Sleep(10);
 				//Displace();
@@ -311,12 +307,12 @@ namespace Todo{
 			//SpriteType.DefineSpriteAcross(Screen.textSurface, 24, 240,2);
 			SpriteType.DefineSingleRowSprite(Screen.textSurface, 2048);
 			CellLayout.CreateGrid(Screen.textSurface,1, 1, 2048, 2048,0,0);
-			Screen.textSurface.SetEasyLayoutCounts(1);
+			/*Screen.textSurface.SetEasyLayoutCounts(1);
 			Screen.textSurface.DefaultUpdatePositions();
 			Screen.textSurface.SetDefaultSpriteType(0);
 			Screen.textSurface.SetDefaultSprite(0);
 			Screen.textSurface.SetDefaultOtherData(new List<float>{0.6f, 0.6f,0.6f,0.6f},new List<float>{1f,1f,1f,1f});
-			Screen.textSurface.DefaultUpdateOtherData();
+			Screen.textSurface.DefaultUpdateOtherData();*/
 			Screen.gl.Surfaces.Add(Screen.textSurface);
 			GL.Enable(EnableCap.Blend);
 			GL.BlendFunc(BlendingFactor.SrcAlpha,BlendingFactor.OneMinusSrcAlpha);
