@@ -79,6 +79,7 @@ namespace Todo{
 			//Screen.gl.ResizingFullScreenPreference = ResizeOption.AddBorder;
 			Screen.gl.FinalResize += Screen.gl.DefaultHandleResize;
 			Screen.textSurface = Surface.Create(Screen.gl, @"/home/void/Downloads/a-starry-msdf.png",TextureMinFilter.Nearest, TextureMagFilter.Linear, false,ShaderCollection.GetMsdfFS(2048, 1),false,2,4,4);
+			Shader sh2 = Shader.Create(ShaderCollection.GetGrayscaleMsdfFS(2048, 1));
 			//Screen.textSurface = Surface.Create(Screen.gl, @"/home/void/Downloads/PxPlus_IBM_VGA9-msdf_smaller.png",false,Shader.MsdfFS(),false,2,4,4);
 			//Screen.textSurface = Surface.Create(Screen.gl, @"/home/void/Downloads/Iosevka-msdf.png",false,Shader.MsdfFS(),false,2,4,4);
 			//SpriteType.DefineSpriteAcross(Screen.textSurface, 28, 50, 51);
@@ -113,8 +114,17 @@ namespace Todo{
 				else if(Screen.gl.KeyIsDown(Key.D)){
 					Screen.textSurface.ChangeOffsetInWorldUnits(1, 0);
 				}
+				else if(Screen.gl.KeyIsDown(Key.B)){
+					if(shcounter++ >= 5){
+						Shader temp = Screen.textSurface.shader;
+						Screen.textSurface.shader = sh2;
+						sh2 = temp;
+						shcounter = 0;
+					}
+				}
 			}
 		}
+		static int shcounter =0;
 		static void TestPerf(){
 			Screen.gl.VSync = VSyncMode.Off;
             System.Diagnostics.Stopwatch timer = new System.Diagnostics.Stopwatch();
