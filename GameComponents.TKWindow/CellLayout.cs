@@ -13,37 +13,37 @@ namespace GameComponents.TKWindow{
 		public PositionFromIndex X;
 		public PositionFromIndex Y;
 		public PositionFromIndex Z = null; //Z isn't used unless the VBO object has PositionDimensions set to 3.
-		public int CellWidthPx; //in pixels
-		public int CellHeightPx;
-		public int HorizontalOffsetPx;
-		public int VerticalOffsetPx;
+		public float CellWidth; //in world coords - this value will be used along with the values set by GLWindow.SetWorldUnitsPerScreen to determine vertex positions.
+		public float CellHeight;
+		public float HorizontalOffset;
+		public float VerticalOffset;
 
-		public static CellLayout CreateGrid(Surface s,int cols,int rows,int cell_width_px,int cell_height_px,int h_offset_px,int v_offset_px,PositionFromIndex z = null){
+		public static CellLayout CreateGrid(Surface s,int cols,int rows,float cell_width = 1.0f,float cell_height = 1.0f,float h_offset = 0.0f,float v_offset = 0.0f,PositionFromIndex z = null){
 			CellLayout c = new CellLayout();
-			c.CellWidthPx = cell_width_px;
-			c.CellHeightPx = cell_height_px;
-			c.HorizontalOffsetPx = h_offset_px;
-			c.VerticalOffsetPx = v_offset_px;
-			c.X = idx => (idx % cols) * c.CellWidthPx; //todo, does this closure need to access the object each time? what if I used a local var here?
-			c.Y = idx => (idx / cols) * c.CellHeightPx;
+			c.CellWidth = cell_width;
+			c.CellHeight = cell_height;
+			c.HorizontalOffset = h_offset;
+			c.VerticalOffset = v_offset;
+			c.X = idx => (idx % cols) * cell_width;
+			c.Y = idx => (idx / cols) * cell_height;
 			c.Z = z;
 			if(s != null){
 				s.layouts.Add(c);
 			}
 			return c;
 		}
-		public static CellLayout CreateIso(Surface s,int cols,int rows,int cell_width_px,int cell_height_px,int h_offset_px,int v_offset_px,int cell_h_offset_px,int cell_v_offset_px,PositionFromIndex z = null,PositionFromIndex elevation = null){
+		public static CellLayout CreateIso(Surface s,int cols,int rows,float cell_width,float cell_height,float h_offset,float v_offset,float cell_h_offset,float cell_v_offset,PositionFromIndex z = null,PositionFromIndex elevation = null){
 			CellLayout c = new CellLayout();
-			c.CellWidthPx = cell_width_px;
-			c.CellHeightPx = cell_height_px;
-			c.HorizontalOffsetPx = h_offset_px;
-			c.VerticalOffsetPx = v_offset_px;
-			c.X = idx => (rows - 1 - (idx/cols) + (idx%cols)) * cell_h_offset_px;
+			c.CellWidth = cell_width;
+			c.CellHeight = cell_height;
+			c.HorizontalOffset = h_offset;
+			c.VerticalOffset = v_offset;
+			c.X = idx => (rows - 1 - (idx/cols) + (idx%cols)) * cell_h_offset;
 			if(elevation == null){
-				c.Y = idx => ((idx/cols) + (idx%cols)) * cell_v_offset_px;
+				c.Y = idx => ((idx/cols) + (idx%cols)) * cell_v_offset;
 			}
 			else{
-				c.Y = idx => ((idx/cols) + (idx%cols)) * cell_v_offset_px + elevation(idx);
+				c.Y = idx => ((idx/cols) + (idx%cols)) * cell_v_offset + elevation(idx);
 			}
 			c.Z = z;
 			if(s != null){
@@ -51,18 +51,18 @@ namespace GameComponents.TKWindow{
 			}
 			return c;
 		}
-		public static CellLayout CreateIsoAtOffset(Surface s,int cols,int rows,int base_start_col,int base_start_row,int base_rows,int cell_width_px,int cell_height_px,int h_offset_px,int v_offset_px,int cell_h_offset_px,int cell_v_offset_px,PositionFromIndex z = null,PositionFromIndex elevation = null){
+		public static CellLayout CreateIsoAtOffset(Surface s,int cols,int rows,int base_start_col,int base_start_row,int base_rows,float cell_width,float cell_height,float h_offset,float v_offset,float cell_h_offset,float cell_v_offset,PositionFromIndex z = null,PositionFromIndex elevation = null){
 			CellLayout c = new CellLayout();
-			c.CellWidthPx = cell_width_px;
-			c.CellHeightPx = cell_height_px;
-			c.HorizontalOffsetPx = h_offset_px;
-			c.VerticalOffsetPx = v_offset_px;
-			c.X = idx => (base_rows - 1 - (idx/cols + base_start_row) + (idx%cols + base_start_col)) * cell_h_offset_px;
+			c.CellWidth = cell_width;
+			c.CellHeight = cell_height;
+			c.HorizontalOffset = h_offset;
+			c.VerticalOffset = v_offset;
+			c.X = idx => (base_rows - 1 - (idx/cols + base_start_row) + (idx%cols + base_start_col)) * cell_h_offset;
 			if(elevation == null){
-				c.Y = idx => ((idx/cols + base_start_row) + (idx%cols + base_start_col)) * cell_v_offset_px;
+				c.Y = idx => ((idx/cols + base_start_row) + (idx%cols + base_start_col)) * cell_v_offset;
 			}
 			else{
-				c.Y = idx => ((idx/cols + base_start_row) + (idx%cols + base_start_col)) * cell_v_offset_px + elevation(idx);
+				c.Y = idx => ((idx/cols + base_start_row) + (idx%cols + base_start_col)) * cell_v_offset + elevation(idx);
 			}
 			c.Z = z;
 			if(s != null){
@@ -70,12 +70,12 @@ namespace GameComponents.TKWindow{
 			}
 			return c;
 		}
-		public static CellLayout Create(Surface s,int cell_width_px,int cell_height_px,int h_offset_px,int v_offset_px,PositionFromIndex x,PositionFromIndex y,PositionFromIndex z = null){
+		public static CellLayout Create(Surface s,float cell_width,float cell_height,float h_offset,float v_offset,PositionFromIndex x,PositionFromIndex y,PositionFromIndex z = null){
 			CellLayout c = new CellLayout();
-			c.CellWidthPx = cell_width_px;
-			c.CellHeightPx = cell_height_px;
-			c.HorizontalOffsetPx = h_offset_px;
-			c.VerticalOffsetPx = v_offset_px;
+			c.CellWidth = cell_width;
+			c.CellHeight = cell_height;
+			c.HorizontalOffset = h_offset;
+			c.VerticalOffset = v_offset;
 			c.X = x;
 			c.Y = y;
 			c.Z = z;

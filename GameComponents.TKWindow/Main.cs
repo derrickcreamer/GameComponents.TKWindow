@@ -46,17 +46,18 @@ namespace Todo{
 		}
 		const int ROWS = 54; //3840 / 40 is 96
 		const int COLS = 96; // 2160 / 40 is 54   (which is 48/27 which is 16/9)
-		static int CELL_W = 40;
-		static int CELL_H = 40;
+		//static int CELL_W = 40;
+		//static int CELL_H = 40;
 
 		static void Main(string[] args){
 			Screen.rng = new RNG((ulong)DateTime.Now.Ticks);
 			ToolkitOptions.Default.EnableHighResolution = false;
 			int height_px = 2048; // Global.SCREEN_H * 16;
 			int width_px = 2048; //Global.SCREEN_W * 8;
-			height_px = ROWS * CELL_H;
-			width_px = COLS * CELL_W;
+			//height_px = ROWS * CELL_H;
+			//width_px = COLS * CELL_W;
 			Screen.gl = new GLWindow(width_px,height_px,"msdf font test");
+			Screen.gl.SetWorldUnitsPerScreen(COLS, ROWS);
 			float r16_9 = 16.0f / 9.0f;
 			float r4_3 = 4.0f / 3.0f;
 			Screen.gl.WindowSizeRules = new ResizeRules{
@@ -85,7 +86,7 @@ namespace Todo{
 			Screen.textSurface.texture.Sprite[0].CalculateThroughIndex(1000);
 			//Screen.textSurface.texture.Sprite.Add(GetFontSprite());
 			//SpriteType.DefineSingleRowSprite(Screen.textSurface, 2048);
-			CellLayout.CreateGrid(Screen.textSurface, COLS, ROWS, CELL_W, CELL_H, 0, 0);
+			CellLayout.CreateGrid(Screen.textSurface, COLS, ROWS);
 			Screen.textSurface.InitializePositions(ROWS*COLS);
 			Screen.textSurface.InitializeOtherDataForSingleLayout(ROWS*COLS, 0, 32, new List<float>{0.6f, 0.6f,0.6f,0.6f},new List<float>{1f,1f,1f,1f});
 			//Screen.gl.Surfaces.Add(Screen.textSurface);
@@ -96,11 +97,21 @@ namespace Todo{
 			//SetupDisplace();
 			//TestPerf();
 			while(Screen.gl.WindowUpdate()){
-				Thread.Sleep(10);
+				Thread.Sleep(50);
 				//Displace();
 				if(Screen.gl.IsExiting || Screen.gl.KeyIsDown(Key.Escape)){
 					Screen.gl.Close();
 					return;
+				}
+				else if(Screen.gl.KeyIsDown(Key.W)){
+					Screen.gl.Viewport = new System.Drawing.Rectangle(Screen.gl.Viewport.X, Screen.gl.Viewport.Y, Screen.gl.Viewport.Width-4, Screen.gl.Viewport.Height-4);
+				}
+				else if(Screen.gl.KeyIsDown(Key.S)){
+					Screen.gl.Viewport = new System.Drawing.Rectangle(Screen.gl.Viewport.X, Screen.gl.Viewport.Y, Screen.gl.Viewport.Width+4, Screen.gl.Viewport.Height+4);
+
+				}
+				else if(Screen.gl.KeyIsDown(Key.D)){
+					Screen.textSurface.ChangeOffsetInWorldUnits(1, 0);
 				}
 			}
 		}

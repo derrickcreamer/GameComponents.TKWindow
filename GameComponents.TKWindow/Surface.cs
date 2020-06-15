@@ -18,10 +18,8 @@ namespace GameComponents.TKWindow{
 		public Texture texture;
 		public Shader shader;
 		public List<CellLayout> layouts = new List<CellLayout>();
-		public float raw_x_offset = 0.0f;
-		public float raw_y_offset = 0.0f; //todo: should be properties
-		private int x_offset_px;
-		private int y_offset_px;
+		internal float ndcOffsetX;
+		internal float ndcOffsetY;
 		public bool UseDepthBuffer = false;
 		public bool Disabled = false;
 		protected Surface(){}
@@ -47,31 +45,13 @@ namespace GameComponents.TKWindow{
 				window.Surfaces.Remove(this);
 			}
 		}
-		public void SetOffsetInPixels(int x_offset_px,int y_offset_px){
-			this.x_offset_px = x_offset_px;
-			this.y_offset_px = y_offset_px;
-			raw_x_offset = (float)(x_offset_px * 2) / (float)window.Viewport.Width;
-			raw_y_offset = (float)(y_offset_px * 2) / (float)window.Viewport.Height;
+		public void SetOffsetInWorldUnits(float x, float y){
+			ndcOffsetX = x * window.worldUnitNdcWidth;
+			ndcOffsetY = y * window.worldUnitNdcHeight;
 		}
-		public void ChangeOffsetInPixels(int dx_offset_px,int dy_offset_px){
-			x_offset_px += dx_offset_px;
-			y_offset_px += dy_offset_px;
-			raw_x_offset += (float)(dx_offset_px * 2) / (float)window.Viewport.Width;
-			raw_y_offset += (float)(dy_offset_px * 2) / (float)window.Viewport.Height; //todo check all this offset stuff to make sure it's alright
-		}
-		//public void XOffsetPx(){ return x_offset_px; }
-		//public void YOffsetPx(){ return y_offset_px; }
-		public int TotalXOffsetPx(CellLayout layout){
-			return x_offset_px + layout.HorizontalOffsetPx;
-		}
-		public int TotalXOffsetPx(){
-			return x_offset_px + layouts[0].HorizontalOffsetPx;
-		}
-		public int TotalYOffsetPx(CellLayout layout){
-			return y_offset_px + layout.VerticalOffsetPx;
-		}
-		public int TotalYOffsetPx(){
-			return y_offset_px + layouts[0].VerticalOffsetPx;
+		public void ChangeOffsetInWorldUnits(float dx, float dy){
+			ndcOffsetX += dx * window.worldUnitNdcWidth;
+			ndcOffsetY += dy * window.worldUnitNdcHeight;
 		}
 		public void InitializePositions(params int[] countByLayout){
 			if(countByLayout.Length == 1){

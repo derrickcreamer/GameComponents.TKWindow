@@ -44,7 +44,15 @@ namespace GameComponents.TKWindow{
 			internalViewport = new Rectangle(x,y,width,height);
 			GL.Viewport(x,y,width,height);
 		}
-
+		//todo, xml comment to explain...
+		// Each CellLayout is measured in world units, and these define how many of those units appear in the -1,1 space.
+		// (these values are used to calculate the actual values of vertex positions)
+		internal float worldUnitNdcWidth;
+		internal float worldUnitNdcHeight;
+		public void SetWorldUnitsPerScreen(float x, float y){
+			worldUnitNdcWidth = 2.0f / x;
+			worldUnitNdcHeight = 2.0f / y;
+		}
 		public GLWindow(int w,int h,string title) : base(w,h,GraphicsMode.Default,title){
 			VSync = VSyncMode.On;
 			GL.ClearColor(0.0f,0.0f,0.0f,0.0f);
@@ -140,7 +148,7 @@ namespace GameComponents.TKWindow{
 						GL.UseProgram(s.shader.ShaderProgramID);
 						LastShaderID = s.shader.ShaderProgramID;
 					}
-					GL.Uniform2(s.shader.OffsetUniformLocation,s.raw_x_offset,s.raw_y_offset);
+					GL.Uniform2(s.shader.OffsetUniformLocation,s.ndcOffsetX,s.ndcOffsetY);
 					GL.Uniform1(s.shader.TextureUniformLocation,s.texture.TextureIndex);
 					GL.BindBuffer(BufferTarget.ElementArrayBuffer,s.vbo.ElementArrayBufferID);
 					GL.BindBuffer(BufferTarget.ArrayBuffer,s.vbo.PositionArrayBufferID);
@@ -180,22 +188,16 @@ namespace GameComponents.TKWindow{
 					}
 				}
 			}
-			float width_ratio = 2.0f / (float)Viewport.Width;
-			float height_ratio = 2.0f / (float)Viewport.Height;
 			CellLayout layout = layout_list != null? null : s.layouts[single_layout];
 			for(int i=0;i<count;++i){
 				if(layout_list != null) layout = s.layouts[layout_list[i]];
-				float x_offset = (float)layout.HorizontalOffsetPx;
-				float y_offset = (float)layout.VerticalOffsetPx;
-				float x_w = (float)layout.CellWidthPx;
-				float y_h = (float)layout.CellHeightPx;
 				int current_index = index_list[i];
-				float cellx = layout.X(current_index) + x_offset;
-				float celly = layout.Y(current_index) + y_offset;
-				float x = cellx * width_ratio - 1.0f;
-				float y = celly * height_ratio - 1.0f;
-				float x_plus1 = (cellx + x_w) * width_ratio - 1.0f;
-				float y_plus1 = (celly + y_h) * height_ratio - 1.0f;
+				float cellx = layout.X(current_index) + layout.HorizontalOffset; // get cellx+y from layout in world coords, then convert to NDC
+				float celly = layout.Y(current_index) + layout.VerticalOffset;
+				float x = cellx * worldUnitNdcWidth - 1.0f;
+				float y = celly * worldUnitNdcHeight - 1.0f;
+				float x_plus1 = (cellx + layout.CellWidth) * worldUnitNdcWidth - 1.0f;
+				float y_plus1 = (celly + layout.CellHeight) * worldUnitNdcHeight - 1.0f;
 
 				int N = s.vbo.PositionDimensions;
 				int idxN = i * 4 * N;
@@ -246,19 +248,13 @@ namespace GameComponents.TKWindow{
 		}
 		public void UpdatePositionSingleVertex(Surface s,int index,int layout_index = 0){
 			float[] values = new float[4 * s.vbo.PositionDimensions]; //2 or 3 dimensions for 4 vertices
-			float width_ratio = 2.0f / (float)Viewport.Width;
-			float height_ratio = 2.0f / (float)Viewport.Height;
 			CellLayout layout = s.layouts[layout_index];
-			float x_offset = (float)layout.HorizontalOffsetPx;
-			float y_offset = (float)layout.VerticalOffsetPx;
-			float x_w = (float)layout.CellWidthPx;
-			float y_h = (float)layout.CellHeightPx;
-			float cellx = layout.X(index) + x_offset;
-			float celly = layout.Y(index) + y_offset;
-			float x = cellx * width_ratio - 1.0f;
-			float y = celly * height_ratio - 1.0f;
-			float x_plus1 = (cellx + x_w) * width_ratio - 1.0f;
-			float y_plus1 = (celly + y_h) * height_ratio - 1.0f;
+			float cellx = layout.X(index) + layout.HorizontalOffset; // get cellx+y from layout in world coords, then convert to NDC
+			float celly = layout.Y(index) + layout.VerticalOffset;
+			float x = cellx * worldUnitNdcWidth - 1.0f;
+			float y = celly * worldUnitNdcHeight - 1.0f;
+			float x_plus1 = (cellx + layout.CellWidth) * worldUnitNdcWidth - 1.0f;
+			float y_plus1 = (celly + layout.CellHeight) * worldUnitNdcHeight - 1.0f;
 
 			int N = s.vbo.PositionDimensions;
 
