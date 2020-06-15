@@ -9,6 +9,7 @@ WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN 
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using OpenTK.Graphics.OpenGL;
 
 namespace GameComponents.TKWindow{
 	public delegate float PositionFromIndex(int idx);
@@ -22,21 +23,21 @@ namespace GameComponents.TKWindow{
 		internal float ndcOffsetY;
 		public bool UseDepthBuffer = false;
 		public bool Disabled = false;
-		protected Surface(){}
-		public static Surface Create(GLWindow window_,string texture_filename,params int[] vertex_attrib_counts){
-			return Create(window_,texture_filename,false,ShaderCollection.DefaultFS(),false,vertex_attrib_counts);
+		public Surface(){} //todo - surface creation needs to be cleaned up, with a better way to specify all options, so for now I'm making the ctor public as a fallback
+		public static Surface Create(GLWindow window,string texture_filename,params int[] vertex_attrib_counts){
+			return Create(window,texture_filename,TextureMinFilter.Nearest, TextureMagFilter.Nearest,false,ShaderCollection.DefaultFS(),false,vertex_attrib_counts);
 		}
-		public static Surface Create(GLWindow window_,string texture_filename,bool loadTextureFromEmbeddedResource,string frag_shader,bool has_depth,params int[] vertex_attrib_counts){
+		public static Surface Create(GLWindow window,string texture_filename, TextureMinFilter minFilter,TextureMagFilter magFilter, bool loadTextureFromEmbeddedResource,string frag_shader,bool has_depth,params int[] vertex_attrib_counts){
 			Surface s = new Surface();
-			s.window = window_;
+			s.window = window;
 			int dims = has_depth? 3 : 2;
 			s.UseDepthBuffer = has_depth;
 			VertexAttributes attribs = VertexAttributes.Create(vertex_attrib_counts);
 			s.vbo = VBO.Create(dims,attribs);
-			s.texture = Texture.Create(texture_filename,null,loadTextureFromEmbeddedResource);
+			s.texture = Texture.Create(texture_filename,null,minFilter,magFilter,loadTextureFromEmbeddedResource);
 			s.shader = Shader.Create(frag_shader);
-			if(window_ != null){
-				window_.Surfaces.Add(s);
+			if(window != null){
+				window.Surfaces.Add(s);
 			}
 			return s;
 		}

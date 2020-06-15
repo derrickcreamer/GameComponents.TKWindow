@@ -78,7 +78,7 @@ namespace Todo{
 			//Screen.gl.ResizingPreference = ResizeOption.SnapWindow; Screen.gl.SnapHeight = Screen.gl.SnapWidth = 100;//todo //ResizeOption.StretchToFit;
 			//Screen.gl.ResizingFullScreenPreference = ResizeOption.AddBorder;
 			Screen.gl.FinalResize += Screen.gl.DefaultHandleResize;
-			Screen.textSurface = Surface.Create(Screen.gl, @"/home/void/Downloads/a-starry-msdf.png",false,ShaderCollection.GetMsdfFS(2048, 1),false,2,4,4);
+			Screen.textSurface = Surface.Create(Screen.gl, @"/home/void/Downloads/a-starry-msdf.png",TextureMinFilter.Nearest, TextureMagFilter.Linear, false,ShaderCollection.GetMsdfFS(2048, 1),false,2,4,4);
 			//Screen.textSurface = Surface.Create(Screen.gl, @"/home/void/Downloads/PxPlus_IBM_VGA9-msdf_smaller.png",false,Shader.MsdfFS(),false,2,4,4);
 			//Screen.textSurface = Surface.Create(Screen.gl, @"/home/void/Downloads/Iosevka-msdf.png",false,Shader.MsdfFS(),false,2,4,4);
 			//SpriteType.DefineSpriteAcross(Screen.textSurface, 28, 50, 51);
@@ -313,7 +313,7 @@ namespace Todo{
 			//Screen.gl.ResizingPreference = ResizeOption.StretchToFit;
 			//Screen.gl.ResizingFullScreenPreference = ResizeOption.AddBorder;
 			Screen.gl.FinalResize += Screen.gl.DefaultHandleResize;
-			Screen.textSurface = Surface.Create(Screen.gl, @"/home/void/Downloads/PxPlus_IBM_VGA9-msdf_smaller.png",false,ShaderCollection.MsdfFS(),false,2,4,4);
+			//Screen.textSurface = Surface.Create(Screen.gl, @"/home/void/Downloads/PxPlus_IBM_VGA9-msdf_smaller.png",false,ShaderCollection.MsdfFS(),false,2,4,4);
 			//Screen.textSurface = Surface.Create(Screen.gl, @"/home/void/Downloads/Iosevka-msdf.png",false,Shader.MsdfFS(),false,2,4,4);
 			//SpriteType.DefineSpriteAcross(Screen.textSurface, 24, 240,2);
 			SpriteType.DefineSingleRowSprite(Screen.textSurface, 2048);
