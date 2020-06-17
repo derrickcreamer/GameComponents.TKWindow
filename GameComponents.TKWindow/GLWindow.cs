@@ -55,6 +55,7 @@ namespace GameComponents.TKWindow{
 			worldUnitNdcHeight = 2.0f / y;
 		}
 		public Stopwatch Timer;
+		public int TimerFramesOffset;
 		public int TimerFrames{
 			get{
 				if(Timer == null) return 0;
@@ -162,7 +163,7 @@ namespace GameComponents.TKWindow{
 					}
 					GL.Uniform2(s.shader.OffsetUniformLocation,s.ndcOffsetX,s.ndcOffsetY);
 					GL.Uniform1(s.shader.TextureUniformLocation,s.texture.TextureIndex);
-					GL.Uniform1(s.shader.TimeUniformLocation, TimerFrames);
+					GL.Uniform1(s.shader.TimeUniformLocation, TimerFrames + TimerFramesOffset);
 					GL.BindBuffer(BufferTarget.ElementArrayBuffer,s.vbo.ElementArrayBufferID);
 					GL.BindBuffer(BufferTarget.ArrayBuffer,s.vbo.PositionArrayBufferID);
 					GL.VertexAttribPointer(0,s.vbo.PositionDimensions,VertexAttribPointerType.Float,false,sizeof(float)*s.vbo.PositionDimensions,new IntPtr(0)); //position

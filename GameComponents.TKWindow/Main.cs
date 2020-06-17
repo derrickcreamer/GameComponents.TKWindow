@@ -57,6 +57,7 @@ namespace Todo{
 			//height_px = ROWS * CELL_H;
 			//width_px = COLS * CELL_W;
 			Screen.gl = new GLWindow(width_px,height_px,"msdf font test");
+			Screen.gl.TimerFramesOffset = -(Screen.rng.GetNext(8888888));
 			Screen.gl.SetWorldUnitsPerScreen(COLS, ROWS);
 			float r16_9 = 16.0f / 9.0f;
 			float r4_3 = 4.0f / 3.0f;

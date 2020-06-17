@@ -152,7 +152,8 @@ void main() {
 	float opacity = clamp(sigDist + 0.5, 0.0, 1.0);
 	float remaining_opacity = (1.0 - opacity);
 
-	float t = float(time) / 800.0;
+    float time2 = float(time) / 2.0;
+	float t = float(time2) / 800.0;
 
 	float v = 0.0;
 	v += sin(position_fs.x + t);
@@ -162,25 +163,44 @@ void main() {
 	float g = cos(v * PI);
 	float b = cos(v * v * PI);
 
-	float t2 = float(time) / 702.0;
+	float t2 = float(time2) / 702.0;
 	float v2 = 0.0;
 	float cx = position_fs.x + 0.5 * sin(t2/3.0);
 	float cy = position_fs.y + 0.5 * cos(t2/2.0);
-	v2 += sin(sqrt(100 * (cx*cx + cy*cy) + 1.0) + t2);
+	v2 += sin(sqrt(00 * (cx*cx + cy*cy) + 1.0) + t2);
+	float d2 = sin(sqrt(100 * (cx*cx + cy*cy) + 1.0) + t2);
 
-	float t3 = float(time) / 532.0;
+	float t3 = float(time2) / 532.0;
 	float cx3 = position_fs.x + 0.5 * sin(t3/3.0);
 	float cy3 = position_fs.y + 0.5 * cos(t3/2.0);
 	v2 += sin(sqrt(100 * (cx3*cx3 + cy3*cy3) + 1.0) + t3);
+	float d3 = sin(sqrt(100 * (cx3*cx3 + cy3*cy3) + 1.0) + t3);
+
+	float t4 = float(time2) / 172.0;
+	float cx4 = position_fs.x + 0.5 * sin(t4/3.0);
+	float cy4 = position_fs.y + 0.5 * cos(t4/2.0);
+	v2 += sin(sqrt(100 * (cx4*cx4 + cy4*cy4) + 1.0) + t4); // multiplying by a bigger number before the sqrt makes more of a zoomed out lattice effect
+	float d4 = sin(sqrt(100 * (cx4*cx4 + cy4*cy4) + 1.0) + t4); // multiplying by a bigger number before the sqrt makes more of a zoomed out lattice effect
 
 	//v2 += cos(position_fs.x + t2);
 	//v2 += cos((position_fs.y + t2)/2.0);
 	//v2 += cos((position_fs.x + position_fs.y + t2)/2.0);
-	float a = cos(v2 * PI / 2.0);
+	float a = cos(v2 * PI / 2.0); // Divide by a bigger number to spread the values over a wider area. Multiply by v2 more times to get cells with more defined circles.
 
+
+	vec4 agl_FragColor = vec4(
+		(bgcolor_fs.r * remaining_opacity + color_fs.r * opacity)*0.9 + r*0.1,
+		(bgcolor_fs.g * remaining_opacity + color_fs.g * opacity)*0.9 + g*0.1,
+		(bgcolor_fs.b * remaining_opacity + color_fs.b * opacity)*0.9 + b*0.1,
+		bgcolor_fs.a * remaining_opacity + color_fs.a * opacity);
+
+r = (r+d2)/2.0;
+g = (g+d3)/2.0;
+b = (b+d4)/2.0;
 	gl_FragColor
 	 //plasma
-	  = vec4(a,a,a,a);
+	  //= vec4(d2,d3,d4,a);
+	  = vec4(r,g,b,a);
 
 	vec4 gdl_FragColor = vec4(
 		(bgcolor_fs.r * remaining_opacity + color_fs.r * opacity)*0.9 + r*0.1,
