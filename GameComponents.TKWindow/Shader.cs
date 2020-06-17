@@ -15,6 +15,7 @@ namespace GameComponents.TKWindow{
 		public int ShaderProgramID;
 		public int OffsetUniformLocation;
 		public int TextureUniformLocation;
+		public int TimeUniformLocation;
 
 		protected class id_and_programs{
 			public int id;
@@ -63,22 +64,25 @@ namespace GameComponents.TKWindow{
 				compiled_fs.Add(frag_shader,fragment_shader);
 			}
 			if(compiled_vs[vert_shader].programs != null && compiled_vs[vert_shader].programs.ContainsKey(fragment_shader)){
-				s.ShaderProgramID = compiled_vs[vert_shader].programs[fragment_shader].ShaderProgramID;
-				s.OffsetUniformLocation = compiled_vs[vert_shader].programs[fragment_shader].OffsetUniformLocation;
-				s.TextureUniformLocation = compiled_vs[vert_shader].programs[fragment_shader].TextureUniformLocation;
+				Shader otherShader = compiled_vs[vert_shader].programs[fragment_shader];
+				s.ShaderProgramID = otherShader.ShaderProgramID;
+				s.OffsetUniformLocation = otherShader.OffsetUniformLocation;
+				s.TextureUniformLocation = otherShader.TextureUniformLocation;
+				s.TimeUniformLocation = otherShader.TimeUniformLocation;
 			}
 			else{
 				int shader_program = GL.CreateProgram();
 				GL.AttachShader(shader_program,vertex_shader);
 				GL.AttachShader(shader_program,fragment_shader);
 				int attrib_index = 0;
-				foreach(string attr in new string[]{"position","texcoord","color","bgcolor"}){
+				foreach(string attr in new string[]{"position","texcoord","color","bgcolor"}){ //todo, this might need work to support more use cases
 					GL.BindAttribLocation(shader_program,attrib_index++,attr);
 				}
 				GL.LinkProgram(shader_program);
 				s.ShaderProgramID = shader_program;
 				s.OffsetUniformLocation = GL.GetUniformLocation(shader_program,"offset");
 				s.TextureUniformLocation = GL.GetUniformLocation(shader_program,"texture");
+				s.TimeUniformLocation = GL.GetUniformLocation(shader_program,"time");
 				if(compiled_vs[vert_shader].programs == null){
 					compiled_vs[vert_shader].programs = new Dictionary<int,Shader>();
 				}
@@ -86,6 +90,7 @@ namespace GameComponents.TKWindow{
 				p.ShaderProgramID = shader_program;
 				p.OffsetUniformLocation = s.OffsetUniformLocation;
 				p.TextureUniformLocation = s.TextureUniformLocation;
+				p.TimeUniformLocation = s.TimeUniformLocation;
 				compiled_vs[vert_shader].programs.Add(fragment_shader,p);
 			}
 			return s;

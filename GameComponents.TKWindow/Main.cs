@@ -78,7 +78,7 @@ namespace Todo{
 			//Screen.gl.ResizingPreference = ResizeOption.SnapWindow; Screen.gl.SnapHeight = Screen.gl.SnapWidth = 100;//todo //ResizeOption.StretchToFit;
 			//Screen.gl.ResizingFullScreenPreference = ResizeOption.AddBorder;
 			Screen.gl.FinalResize += Screen.gl.DefaultHandleResize;
-			Screen.textSurface = Surface.Create(Screen.gl, @"/home/void/Downloads/a-starry-msdf.png",TextureMinFilter.Nearest, TextureMagFilter.Linear, false,ShaderCollection.GetMsdfFS(2048, 1),false,2,4,4);
+			Screen.textSurface = Surface.Create(Screen.gl, @"/home/void/Downloads/a-starry-msdf.png",TextureMinFilter.Nearest, TextureMagFilter.Linear, false,ShaderCollection.GetMsdfFS_todoplasma(2048, 1),false,2,4,4);
 			Shader sh2 = Shader.Create(ShaderCollection.GetGrayscaleMsdfFS(2048, 1));
 			//Screen.textSurface = Surface.Create(Screen.gl, @"/home/void/Downloads/PxPlus_IBM_VGA9-msdf_smaller.png",false,Shader.MsdfFS(),false,2,4,4);
 			//Screen.textSurface = Surface.Create(Screen.gl, @"/home/void/Downloads/Iosevka-msdf.png",false,Shader.MsdfFS(),false,2,4,4);
@@ -98,7 +98,7 @@ namespace Todo{
 			//SetupDisplace();
 			//TestPerf();
 			while(Screen.gl.WindowUpdate()){
-				Thread.Sleep(50);
+				Thread.Sleep(10);
 				//Displace();
 				if(Screen.gl.IsExiting || Screen.gl.KeyIsDown(Key.Escape)){
 					Screen.gl.Close();
@@ -235,7 +235,7 @@ namespace Todo{
 		static int getNextSprite2() => Screen.rng.GetNext(110); //768
 		static float getNextFgColor() => 0.5f + ((float)Screen.rng.GetNext(100)+1) / 200f;
 		static float getNextBgColor() => 0.2f + ((float)Screen.rng.GetNext(100)+1) / 333f;
-		static float getColor2() => Screen.rng.OneIn(3)? 1.0f : 0.2f;// 0.5f + ((float)Screen.rng.GetNext(100)+1) / 200f;
+		static float getColor2() => 0.7f;// Screen.rng.OneIn(3)? 1.0f : 0.2f;// 0.5f + ((float)Screen.rng.GetNext(100)+1) / 200f;
 		static void SetGlyphs(){
 			const int count = ROWS*COLS;
 			int[] sprite_cols = new int[count];

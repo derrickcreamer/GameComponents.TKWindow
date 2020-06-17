@@ -14,6 +14,7 @@ namespace GameComponents.TKWindow{
 			return
 @"#version 120
 uniform vec2 offset;
+uniform int time; // todo, let's try 'frames', where one frame is 10ms so the math is easy.
 
 attribute vec4 position;
 attribute vec2 texcoord;
@@ -23,12 +24,14 @@ attribute vec4 bgcolor;
 varying vec2 texcoord_fs;
 varying vec4 color_fs;
 varying vec4 bgcolor_fs;
+varying vec4 position_fs; //todo clean up position in shader...decide how to do this. Probably just keep it all the time, and add time too.
 
 void main(){
  texcoord_fs = texcoord;
  color_fs = color;
  bgcolor_fs = bgcolor;
- gl_Position = vec4(position.x + offset.x,-position.y - offset.y,position.z,1);
+ position_fs = vec4(position.x + offset.x,-position.y - offset.y,position.z,1);
+ gl_Position = position_fs;
 }
 ";
 		}
@@ -99,6 +102,7 @@ uniform sampler2D texture;
 varying vec2 texcoord_fs;
 varying vec4 color_fs;
 varying vec4 bgcolor_fs;
+varying vec4 position_fs; //todo
 
 float median(float r, float g, float b) {
 	return max(min(r, g), min(max(r, g), b));
@@ -112,10 +116,76 @@ void main() {
 	sigDist *= dot(pxRange/texture_size, 0.5/fwidth(texcoord_fs));
 	float opacity = clamp(sigDist + 0.5, 0.0, 1.0);
 	float remaining_opacity = (1.0 - opacity);
+	if(position_fs.x < 0) gl_FragColor = vec4(0.3,0,0,1); //todo remove
+	else
 	gl_FragColor = vec4(
 		bgcolor_fs.r * remaining_opacity + color_fs.r * opacity,
 		bgcolor_fs.g * remaining_opacity + color_fs.g * opacity,
 		bgcolor_fs.b * remaining_opacity + color_fs.b * opacity,
+		bgcolor_fs.a * remaining_opacity + color_fs.a * opacity);
+}";
+		}
+		///<summary>todo desc.Requires MSDF font texture. Returns a shader for the given texture size and pxRange.</summary>
+		public static string GetMsdfFS_todoplasma(int textureSize, int pxRange){
+			return
+			@"#version 120
+uniform sampler2D texture;
+uniform int time; // todo, let's try 'frames', where one frame is 10ms so the math is easy.
+
+varying vec2 texcoord_fs;
+varying vec4 color_fs;
+varying vec4 bgcolor_fs;
+varying vec4 position_fs; //todo
+
+const float PI = 3.1415926535897932384626433832795;
+
+float median(float r, float g, float b) {
+	return max(min(r, g), min(max(r, g), b));
+}
+
+void main() {
+	float pxRange = " + pxRange.ToString() + @".0;
+	vec2 texture_size = vec2(" + textureSize.ToString() + @".0, " + textureSize.ToString() + @".0);
+	vec3 sample = texture2D(texture, texcoord_fs).rgb;
+	float sigDist = median(sample.r, sample.g, sample.b) - 0.5;
+	sigDist *= dot(pxRange/texture_size, 0.5/fwidth(texcoord_fs));
+	float opacity = clamp(sigDist + 0.5, 0.0, 1.0);
+	float remaining_opacity = (1.0 - opacity);
+
+	float t = float(time) / 800.0;
+
+	float v = 0.0;
+	v += sin(position_fs.x + t);
+	v += sin((position_fs.y + t)/2.0);
+	v += sin((position_fs.x + position_fs.y + t)/2.0);
+	float r = sin(v * PI);
+	float g = cos(v * PI);
+	float b = cos(v * v * PI);
+
+	float t2 = float(time) / 702.0;
+	float v2 = 0.0;
+	float cx = position_fs.x + 0.5 * sin(t2/3.0);
+	float cy = position_fs.y + 0.5 * cos(t2/2.0);
+	v2 += sin(sqrt(100 * (cx*cx + cy*cy) + 1.0) + t2);
+
+	float t3 = float(time) / 532.0;
+	float cx3 = position_fs.x + 0.5 * sin(t3/3.0);
+	float cy3 = position_fs.y + 0.5 * cos(t3/2.0);
+	v2 += sin(sqrt(100 * (cx3*cx3 + cy3*cy3) + 1.0) + t3);
+
+	//v2 += cos(position_fs.x + t2);
+	//v2 += cos((position_fs.y + t2)/2.0);
+	//v2 += cos((position_fs.x + position_fs.y + t2)/2.0);
+	float a = cos(v2 * PI / 2.0);
+
+	gl_FragColor
+	 //plasma
+	  = vec4(a,a,a,a);
+
+	vec4 gdl_FragColor = vec4(
+		(bgcolor_fs.r * remaining_opacity + color_fs.r * opacity)*0.9 + r*0.1,
+		(bgcolor_fs.g * remaining_opacity + color_fs.g * opacity)*0.9 + g*0.1,
+		(bgcolor_fs.b * remaining_opacity + color_fs.b * opacity)*0.9 + b*0.1,
 		bgcolor_fs.a * remaining_opacity + color_fs.a * opacity);
 }";
 		}

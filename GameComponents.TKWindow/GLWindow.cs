@@ -13,6 +13,7 @@ using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Input;
+using System.Diagnostics;
 
 namespace GameComponents.TKWindow{
 	public class GLWindow : GameWindow{
@@ -53,6 +54,15 @@ namespace GameComponents.TKWindow{
 			worldUnitNdcWidth = 2.0f / x;
 			worldUnitNdcHeight = 2.0f / y;
 		}
+		public Stopwatch Timer;
+		public int TimerFrames{
+			get{
+				if(Timer == null) return 0;
+				unchecked{
+					return (int)Timer.ElapsedMilliseconds / 10;
+				}
+			}
+		}
 		public GLWindow(int w,int h,string title) : base(w,h,GraphicsMode.Default,title){
 			VSync = VSyncMode.On;
 			GL.ClearColor(0.0f,0.0f,0.0f,0.0f);
@@ -63,6 +73,8 @@ namespace GameComponents.TKWindow{
 			//Keyboard.KeyRepeat = true;
 			internalViewport = new Rectangle(0,0,w,h);
 			FinalResize = DefaultHandleResize;
+			Timer = new Stopwatch();
+			Timer.Start();
 		}
 		public bool FullScreen => this.WindowState == WindowState.Fullscreen;
 		protected virtual void KeyDownHandler(object sender,KeyboardKeyEventArgs args){ // todo, keeping or not? see input note above.
@@ -150,6 +162,7 @@ namespace GameComponents.TKWindow{
 					}
 					GL.Uniform2(s.shader.OffsetUniformLocation,s.ndcOffsetX,s.ndcOffsetY);
 					GL.Uniform1(s.shader.TextureUniformLocation,s.texture.TextureIndex);
+					GL.Uniform1(s.shader.TimeUniformLocation, TimerFrames);
 					GL.BindBuffer(BufferTarget.ElementArrayBuffer,s.vbo.ElementArrayBufferID);
 					GL.BindBuffer(BufferTarget.ArrayBuffer,s.vbo.PositionArrayBufferID);
 					GL.VertexAttribPointer(0,s.vbo.PositionDimensions,VertexAttribPointerType.Float,false,sizeof(float)*s.vbo.PositionDimensions,new IntPtr(0)); //position
