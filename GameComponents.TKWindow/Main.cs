@@ -79,7 +79,7 @@ namespace Todo{
 			//Screen.gl.ResizingPreference = ResizeOption.SnapWindow; Screen.gl.SnapHeight = Screen.gl.SnapWidth = 100;//todo //ResizeOption.StretchToFit;
 			//Screen.gl.ResizingFullScreenPreference = ResizeOption.AddBorder;
 			Screen.gl.FinalResize += Screen.gl.DefaultHandleResize;
-			Screen.textSurface = Surface.Create(Screen.gl, @"/home/void/Downloads/a-starry-msdf.png",TextureMinFilter.Nearest, TextureMagFilter.Linear, false,ShaderCollection.GetMsdfFS_todoplasma(2048, 1),false,2,4,4);
+			Screen.textSurface = Surface.Create(Screen.gl, @"/home/void/Downloads/a-starry-msdf.png",TextureMinFilter.Nearest, TextureMagFilter.Linear, false,ShaderCollection.GetMsdfFS/*_todoplasma*/(2048, 1),false,2,4,4);
 			Shader sh2 = Shader.Create(ShaderCollection.GetGrayscaleMsdfFS(2048, 1));
 			//Screen.textSurface = Surface.Create(Screen.gl, @"/home/void/Downloads/PxPlus_IBM_VGA9-msdf_smaller.png",false,Shader.MsdfFS(),false,2,4,4);
 			//Screen.textSurface = Surface.Create(Screen.gl, @"/home/void/Downloads/Iosevka-msdf.png",false,Shader.MsdfFS(),false,2,4,4);
@@ -95,7 +95,8 @@ namespace Todo{
 			GL.Enable(EnableCap.Blend);
 			GL.BlendFunc(BlendingFactor.SrcAlpha,BlendingFactor.OneMinusSrcAlpha);
 			Screen.gl.Visible = true;
-			SetGlyphs();
+			MakeFakeMap();
+			//SetGlyphs();
 			//SetupDisplace();
 			//TestPerf();
 			while(Screen.gl.WindowUpdate()){
@@ -258,6 +259,109 @@ namespace Todo{
 			}
 			Screen.gl.UpdateOtherVertexArray(Screen.textSurface, sprite_cols, color_info);
 		}
+		// '#' is 7?
+		static void MakeFakeMap(){
+			//let's do a 30x20 fake map, centered on theleft side...
+			// do random wall/floors for an area in the right center...
+			//then do blanks for the rest
+			//48x54...
+			char[,] map = new char[ROWS,COLS];
+			for(int i=0;i<35;++i){
+				for(int j=0;j<40;++j){
+					char ch = '.';
+					if(Screen.rng.OneIn(3)) ch = '#';
+					if(Screen.rng.OneIn(3)) ch = '~';
+					map[10+i,COLS/2-5+j] = ch;
+				}
+			}
+			string[] lines = fakeMap.Split(new char[]{'\r', '\n'}, StringSplitOptions.RemoveEmptyEntries);
+			int idx = 0;
+			foreach(string line in lines){
+				string l = line.PadRight(30);
+				for(int n=0;n<l.Length;++n){
+					map[17+idx, (COLS/2-34)+n] = l[n];
+				}
+				++idx;
+			}
+			const int count = ROWS*COLS;
+			int[] sprite_cols = new int[count];
+			float[][] color_info = new float[2][];
+			color_info[0] = new float[4 * count];
+			color_info[1] = new float[4 * count];
+			for(int n=0;n<count;++n){
+				int spr = 4; // space
+				bool blue = false;
+				bool gray = false;
+				int x = n % COLS;
+				int y = n / COLS;
+				switch(map[y,x]){
+					case '#':
+					spr = 7;
+					break;
+					case '.':
+					spr = 18;
+					break;
+					case '~':
+					spr = 98;
+					blue = true;
+					break;
+					case '+':
+					spr = 15;
+					gray = true;
+					break;
+					case ',':
+					spr = 16;
+					gray = true;
+					break;
+				}
+				sprite_cols[n] = spr;
+
+				int idx4 = n * 4;
+				float rr = 0.8f;
+				float gg = 0.8f;
+				float bb = 0.8f;
+				if(blue){
+					rr = 0.1f;
+					gg = 0.2f;
+					bb = 0.9f;
+				}
+				else if(gray){
+					rr = gg = bb = 0.4f;
+				}
+				if(spr == 4){
+					rr = gg = bb = 0.0f;
+				}
+				color_info[0][idx4] = rr;
+				color_info[0][idx4 + 1] = gg;
+				color_info[0][idx4 + 2] = bb;
+				color_info[0][idx4 + 3] = 1.0f;//0.5f + (float)(getNextColor() * 0.5f);
+				color_info[1][idx4] = 0.0f;//getNextBgColor();//0.2f + (float)(getNextColor() * 0.3f);
+				color_info[1][idx4 + 1] = 0.0f;//getNextBgColor();//0.2f + (float)(getNextColor() * 0.3f);
+				color_info[1][idx4 + 2] = 0.0f;//getNextBgColor();//0.2f + (float)(getNextColor() * 0.3f);
+				color_info[1][idx4 + 3] = 1.0f;//0.2f + (float)(getNextColor() * 0.3f);
+			}
+			Screen.gl.UpdateOtherVertexArray(Screen.textSurface, sprite_cols, color_info);
+		}
+		static string fakeMap = @"##############################
+#............................#
+#.................#######.##.#
+#.................###   #....#
+#.................+.#   ######
+###################.#
+                  #.#
+                  #.#
+        ###########.##########
+       ##.....................
+       #................######
+      ##......................
+      #.................######
+      #........,,,,,....#
+      ##......,,,,,,,...######
+       #....,,,,,,,,,,........
+       ##....,,,,,,,,,..#.####
+        #################.####
+                        #.....
+                        ######";
 		static void WorkingSetGlyphs(){
 			const int rows = 28;
 			const int cols = 88;

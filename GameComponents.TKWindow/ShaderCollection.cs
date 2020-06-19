@@ -112,12 +112,16 @@ void main() {
 	float pxRange = " + pxRange.ToString() + @".0;
 	vec2 texture_size = vec2(" + textureSize.ToString() + @".0, " + textureSize.ToString() + @".0);
 	vec3 sample = texture2D(texture, texcoord_fs).rgb;
-	float sigDist = median(sample.r, sample.g, sample.b) - 0.5;
-	sigDist *= dot(pxRange/texture_size, 0.5/fwidth(texcoord_fs));
+	float sigDist = //0.76923 *
+	(median(sample.r, sample.g, sample.b) - 0.5);
+	//sigDist *= dot(pxRange/texture_size, 0.5/fwidth(texcoord_fs));
+	//sigDist *= dot(pxRange/texture_size, 0.5/fwidth(texcoord_fs));
 	float opacity = clamp(sigDist + 0.5, 0.0, 1.0);
 	float remaining_opacity = (1.0 - opacity);
-	if(position_fs.x < 0) gl_FragColor = vec4(0.3,0,0,1); //todo remove
-	else
+	//if(position_fs.x < 0) gl_FragColor = vec4(0.3,0,0,1); //todo remove
+	//else
+//		gl_FragColor = vec4(opacity, opacity, opacity, 1);
+
 	gl_FragColor = vec4(
 		bgcolor_fs.r * remaining_opacity + color_fs.r * opacity,
 		bgcolor_fs.g * remaining_opacity + color_fs.g * opacity,
@@ -197,12 +201,36 @@ void main() {
 r = (r+d2)/2.0;
 g = (g+d3)/2.0;
 b = (b+d4)/2.0;
-	gl_FragColor
+	//gl_FragColor
 	 //plasma
 	  //= vec4(d2,d3,d4,a);
-	  = vec4(r,g,b,a);
+	  //= vec4(r,g,b,a);
 
-	vec4 gdl_FragColor = vec4(
+	  float a1 = a * 0.3;
+	  float a9 = 1.0 - a1;
+
+	  if(color_fs.r < 0.1 && color_fs.g < 0.1 && color_fs.b < 0.1){
+		  a1 = 0;
+		  a9 = 1.0;
+	  }
+
+	  if(
+		  !(		(bgcolor_fs.r * remaining_opacity + color_fs.r * opacity) > 0.39
+		|| (bgcolor_fs.g * remaining_opacity + color_fs.g * opacity) > 0.39
+		|| (bgcolor_fs.b * remaining_opacity + color_fs.b * opacity) > 0.39)
+	  ){
+		  a1 = 0;
+		  a9 = 1.0;
+	  }
+
+	  //if(position_fs.x > 0)
+		  gl_FragColor = vec4(
+		(bgcolor_fs.r * remaining_opacity + color_fs.r * opacity)*a9 + r*a1,
+		(bgcolor_fs.g * remaining_opacity + color_fs.g * opacity),//*a9 + g*a1,
+		(bgcolor_fs.b * remaining_opacity + color_fs.b * opacity),//*a9 + b*a1,
+		bgcolor_fs.a * remaining_opacity + color_fs.a * opacity);
+	//else
+	 vec4 aagl_FragColor = vec4(
 		(bgcolor_fs.r * remaining_opacity + color_fs.r * opacity)*0.9 + r*0.1,
 		(bgcolor_fs.g * remaining_opacity + color_fs.g * opacity)*0.9 + g*0.1,
 		(bgcolor_fs.b * remaining_opacity + color_fs.b * opacity)*0.9 + b*0.1,
