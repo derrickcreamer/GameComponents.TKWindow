@@ -44,7 +44,7 @@ namespace Todo{
 			public static Surface textSurface;
 			public static RNG rng;
 		}
-		const int ROWS = 54; //3840 / 40 is 96
+		const int ROWS = 33; //3840 / 40 is 96
 		const int COLS = 96; // 2160 / 40 is 54   (which is 48/27 which is 16/9)
 		//static int CELL_W = 40;
 		//static int CELL_H = 40;
@@ -79,12 +79,13 @@ namespace Todo{
 			//Screen.gl.ResizingPreference = ResizeOption.SnapWindow; Screen.gl.SnapHeight = Screen.gl.SnapWidth = 100;//todo //ResizeOption.StretchToFit;
 			//Screen.gl.ResizingFullScreenPreference = ResizeOption.AddBorder;
 			Screen.gl.FinalResize += Screen.gl.DefaultHandleResize;
-			Screen.textSurface = Surface.Create(Screen.gl, @"/home/void/Downloads/a-starry-msdf.png",TextureMinFilter.Nearest, TextureMagFilter.Linear, false,ShaderCollection.GetMsdfFS/*_todoplasma*/(2048, 1),false,2,4,4);
+			//Screen.textSurface = Surface.Create(Screen.gl, @"/home/void/Downloads/a-starry-msdf.png",TextureMinFilter.Nearest, TextureMagFilter.Linear, false,ShaderCollection.GetMsdfFS/*_todoplasma*/(2048, 1),false,2,4,4);
+			Screen.textSurface = Surface.Create(Screen.gl, @"/home/void/Downloads/PxPlus_IBM_VGA9-msdf_smaller.png",TextureMinFilter.Nearest, TextureMagFilter.Linear,false,ShaderCollection.GetMsdfFS(2048, 2),false,2,4,4);
 			Shader sh2 = Shader.Create(ShaderCollection.GetGrayscaleMsdfFS(2048, 1));
-			//Screen.textSurface = Surface.Create(Screen.gl, @"/home/void/Downloads/PxPlus_IBM_VGA9-msdf_smaller.png",false,Shader.MsdfFS(),false,2,4,4);
 			//Screen.textSurface = Surface.Create(Screen.gl, @"/home/void/Downloads/Iosevka-msdf.png",false,Shader.MsdfFS(),false,2,4,4);
 			//SpriteType.DefineSpriteAcross(Screen.textSurface, 28, 50, 51);
-			Screen.textSurface.texture.Sprite.Add(Get8x8FontSprite());
+			//Screen.textSurface.texture.Sprite.Add(Get8x8FontSprite());
+			Screen.textSurface.texture.Sprite.Add(GetFontSprite());
 			Screen.textSurface.texture.Sprite[0].CalculateThroughIndex(1000);
 			//Screen.textSurface.texture.Sprite.Add(GetFontSprite());
 			//SpriteType.DefineSingleRowSprite(Screen.textSurface, 2048);
@@ -266,11 +267,13 @@ namespace Todo{
 			//then do blanks for the rest
 			//48x54...
 			char[,] map = new char[ROWS,COLS];
-			for(int i=0;i<35;++i){
-				for(int j=0;j<40;++j){
+			int rows2 = ROWS/3;
+			int cols2 = COLS/2;
+			for(int i=0;i<rows2;++i){
+				for(int j=0;j<cols2;++j){
 					char ch = '.';
 					if(Screen.rng.OneIn(3)) ch = '#';
-					if(Screen.rng.OneIn(3)) ch = '~';
+					if(Screen.rng.OneIn(9)) ch = '~';
 					map[10+i,COLS/2-5+j] = ch;
 				}
 			}
@@ -279,7 +282,7 @@ namespace Todo{
 			foreach(string line in lines){
 				string l = line.PadRight(30);
 				for(int n=0;n<l.Length;++n){
-					map[17+idx, (COLS/2-34)+n] = l[n];
+					map[idx, (cols2 - (COLS/3))+n] = l[n];
 				}
 				++idx;
 			}
@@ -289,28 +292,29 @@ namespace Todo{
 			color_info[0] = new float[4 * count];
 			color_info[1] = new float[4 * count];
 			for(int n=0;n<count;++n){
-				int spr = 4; // space
+				int offset = 32; // offset = 4;
+				int spr = offset; // space
 				bool blue = false;
 				bool gray = false;
 				int x = n % COLS;
 				int y = n / COLS;
 				switch(map[y,x]){
 					case '#':
-					spr = 7;
+					spr = 3 + offset;
 					break;
 					case '.':
-					spr = 18;
+					spr = 14 + offset;
 					break;
 					case '~':
-					spr = 98;
+					spr = 94 + offset;
 					blue = true;
 					break;
 					case '+':
-					spr = 15;
+					spr = 11 + offset;
 					gray = true;
 					break;
 					case ',':
-					spr = 16;
+					spr = 12 + offset;
 					gray = true;
 					break;
 				}
@@ -337,7 +341,7 @@ namespace Todo{
 				color_info[0][idx4 + 3] = 1.0f;//0.5f + (float)(getNextColor() * 0.5f);
 				color_info[1][idx4] = 0.0f;//getNextBgColor();//0.2f + (float)(getNextColor() * 0.3f);
 				color_info[1][idx4 + 1] = 0.0f;//getNextBgColor();//0.2f + (float)(getNextColor() * 0.3f);
-				color_info[1][idx4 + 2] = 0.0f;//getNextBgColor();//0.2f + (float)(getNextColor() * 0.3f);
+				color_info[1][idx4 + 2] = blue? 0.15f : 0.0f;//getNextBgColor();//0.2f + (float)(getNextColor() * 0.3f);
 				color_info[1][idx4 + 3] = 1.0f;//0.2f + (float)(getNextColor() * 0.3f);
 			}
 			Screen.gl.UpdateOtherVertexArray(Screen.textSurface, sprite_cols, color_info);
