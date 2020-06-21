@@ -14,7 +14,7 @@ namespace GameComponents.TKWindow{
 		//   texture
 		//   offset
 		//   time
-		//   viewportSize (todo)
+		//   viewportSize
 		public static string DefaultVS(){
 			return
 @"#version 120
@@ -102,6 +102,7 @@ void main(){
 			@"#version 120
 uniform sampler2D texture;
 uniform int time; // todo, let's try 'frames', where one frame is 10ms so the math is easy.
+uniform vec2 viewportSize;
 
 varying vec2 texcoord;
 varying vec4 color;
@@ -140,7 +141,7 @@ float smoothNoise2(vec2 uv, int frame){
 }
 
 void main() {
-	vec2 uv = gl_FragCoord.xy / vec2(3840.0, 2160.0);
+	vec2 uv = gl_FragCoord.xy / viewportSize;
 	float c2 = smoothNoise2(uv, time);
 	float c3 = smoothNoise2(uv, time+10);
 	float c4 = mix(c2, c3, float((mod(time, 10.0))) / 10.0);

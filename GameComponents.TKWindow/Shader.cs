@@ -16,6 +16,7 @@ namespace GameComponents.TKWindow{
 		public int OffsetUniformLocation;
 		public int TextureUniformLocation;
 		public int TimeUniformLocation;
+		public int ViewportSizeUniformLocation;
 
 		protected class id_and_programs{
 			public int id;
@@ -69,6 +70,7 @@ namespace GameComponents.TKWindow{
 				s.OffsetUniformLocation = otherShader.OffsetUniformLocation;
 				s.TextureUniformLocation = otherShader.TextureUniformLocation;
 				s.TimeUniformLocation = otherShader.TimeUniformLocation;
+				s.ViewportSizeUniformLocation = otherShader.ViewportSizeUniformLocation;
 			}
 			else{
 				int shader_program = GL.CreateProgram();
@@ -83,6 +85,7 @@ namespace GameComponents.TKWindow{
 				s.OffsetUniformLocation = GL.GetUniformLocation(shader_program,"offset");
 				s.TextureUniformLocation = GL.GetUniformLocation(shader_program,"texture");
 				s.TimeUniformLocation = GL.GetUniformLocation(shader_program,"time");
+				s.ViewportSizeUniformLocation = GL.GetUniformLocation(shader_program, "viewportSize");
 				if(compiled_vs[vert_shader].programs == null){
 					compiled_vs[vert_shader].programs = new Dictionary<int,Shader>();
 				}
@@ -91,6 +94,7 @@ namespace GameComponents.TKWindow{
 				p.OffsetUniformLocation = s.OffsetUniformLocation;
 				p.TextureUniformLocation = s.TextureUniformLocation;
 				p.TimeUniformLocation = s.TimeUniformLocation;
+				p.ViewportSizeUniformLocation = s.ViewportSizeUniformLocation;
 				compiled_vs[vert_shader].programs.Add(fragment_shader,p);
 			}
 			return s;
