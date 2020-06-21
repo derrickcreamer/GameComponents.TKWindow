@@ -30,7 +30,7 @@ void main(){
  texcoord_fs = texcoord;
  color_fs = color;
  bgcolor_fs = bgcolor;
- position_fs = vec4(position.x + offset.x,-position.y - offset.y,position.z,1);
+ position_fs = vec4(position.x + offset.x, -position.y - offset.y, position.z, 1.0);
  gl_Position = position_fs;
 }
 ";
@@ -112,95 +112,10 @@ void main() {
 	float pxRange = " + pxRange.ToString() + @".0;
 	vec2 texture_size = vec2(" + textureSize.ToString() + @".0, " + textureSize.ToString() + @".0);
 	vec3 sample = texture2D(texture, texcoord_fs).rgb;
-	float sigDist = //0.76923 *
-	(median(sample.r, sample.g, sample.b) - 0.5);
-	//-0.5;
-	//sigDist *= dot(pxRange/texture_size, 0.5/fwidth(texcoord_fs));
+	float sigDist = (median(sample.r, sample.g, sample.b) - 0.5);
 	sigDist *= dot(pxRange/texture_size, 0.5/fwidth(texcoord_fs));
-	/*float aaa = dot(pxRange/texture_size, 0.5/fwidth(texcoord_fs));
-	if(aaa < 1.9902)
-	gl_FragColor = vec4(1,0,0,1);
-	else if (aaa < 1.9904)
-	gl_FragColor = vec4(0,1,0,1);
-	else if (aaa < 1.9906)
-	gl_FragColor = vec4(0,0,1,1);
-	else if (aaa < 1.9908)
-	gl_FragColor = vec4(1,1,0,1);
-	else if (aaa < 1.9909)
-	gl_FragColor = vec4(1,0,1,1);
-	else
-	gl_FragColor = vec4(1,1,1,1);
-
-return;*/
-	//float opacity = clamp(sigDist/((fwidth(texcoord_fs.x)+fwidth(texcoord_fs.y))/2.0) + 0.5, 0.0, 1.0);
 	float opacity = clamp(sigDist + 0.5, 0.0, 1.0);
-
 	float remaining_opacity = (1.0 - opacity);
-	gl_FragColor = vec4(
-		bgcolor_fs.r * remaining_opacity + color_fs.r * opacity,
-		bgcolor_fs.g * remaining_opacity + color_fs.g * opacity,
-		bgcolor_fs.b * remaining_opacity + color_fs.b * opacity,
-		bgcolor_fs.a * remaining_opacity + color_fs.a * opacity);
-return;
-
-		gl_FragColor = vec4(color_fs.r, color_fs.g, color_fs.b, opacity);
-		//gl_FragColor = vec4(opacity, opacity, opacity, opacity);
-		return;
-	if(opacity == 0.0){
-		gl_FragColor = vec4(0.0);
-		return;
-	}
-	if(opacity == 1.0){
-		gl_FragColor = vec4(0.0);
-		return;
-	}
-	// blue to magenta to red to yellow?
-	// so, 1, 2, 3 transitions...
-	// so blue goes 1 1 0 0
-	// red goes     0 1 1 1
-	//green goes    0 0 0 1
-	// so blue is 1 - (opacity- 1.0/3.0) * 3
-	float bluee = 1.0 - (opacity - 1.0/3.0) * 3.0;
-	float rede = opacity * 3.0;
-	float greene = (opacity - 2.0/3.0) * 3.0;
-		gl_FragColor = vec4(rede, greene, bluee,1.0);
-		//gl_FragColor = vec4(opacity,opacity,opacity,1.0);
-		return;
-	if(opacity < 0.09){
-		gl_FragColor = vec4(0.0,1.0,0.0,1.0);
-		return;
-	}
-	if(opacity < 0.15){
-		gl_FragColor = vec4(0.0,1.0,1.0,1.0);
-		return;
-	}
-	if(opacity < 0.21){
-		gl_FragColor = vec4(0.0);
-		return;
-	}
-	if(opacity < 0.31){
-		gl_FragColor = vec4(1.0,0.0,0.0,1.0);
-		return;
-	}
-	if(opacity < 0.41){
-		gl_FragColor = vec4(0.0,1.0,0.0,1.0);
-		return;
-	}
-	if(opacity < 0.81){
-		gl_FragColor = vec4(0.0,0.0,1.0,1.0);
-		return;
-	}
-	if(opacity == 1.0){
-		gl_FragColor = vec4(0.0);
-		return;
-	}
-		gl_FragColor = vec4(0.5,0.5,0.5,1.0);
-		return;
-	float remaining_opacity2 = (1.0 - opacity);
-	//if(position_fs.x < 0) gl_FragColor = vec4(0.3,0,0,1); //todo remove
-	//else
-//		gl_FragColor = vec4(opacity, opacity, opacity, 1); //TODO - MUST CHANGE EVERY SINGLE INSTANCE OF INT TO FLOAT HERE.
-
 	gl_FragColor = vec4(
 		bgcolor_fs.r * remaining_opacity + color_fs.r * opacity,
 		bgcolor_fs.g * remaining_opacity + color_fs.g * opacity,
@@ -250,7 +165,7 @@ void main() {
 	float v2 = 0.0;
 	float cx = position_fs.x + 0.5 * sin(t2/3.0);
 	float cy = position_fs.y + 0.5 * cos(t2/2.0);
-	v2 += sin(sqrt(00 * (cx*cx + cy*cy) + 1.0) + t2);
+	v2 += sin(sqrt(100 * (cx*cx + cy*cy) + 1.0) + t2);
 	float d2 = sin(sqrt(100 * (cx*cx + cy*cy) + 1.0) + t2);
 
 	float t3 = float(time2) / 532.0;
@@ -289,7 +204,7 @@ b = (b+d4)/2.0;
 	  float a9 = 1.0 - a1;
 
 	  if(color_fs.r < 0.1 && color_fs.g < 0.1 && color_fs.b < 0.1){
-		  a1 = 0;
+		  a1 = 0.0;
 		  a9 = 1.0;
 	  }
 
@@ -298,11 +213,11 @@ b = (b+d4)/2.0;
 		|| (bgcolor_fs.g * remaining_opacity + color_fs.g * opacity) > 0.39
 		|| (bgcolor_fs.b * remaining_opacity + color_fs.b * opacity) > 0.39)
 	  ){
-		  a1 = 0;
+		  a1 = 0.0;
 		  a9 = 1.0;
 	  }
 
-	  //if(position_fs.x > 0)
+	  //if(position_fs.x > 0.0)
 		  gl_FragColor = vec4(
 		(bgcolor_fs.r * remaining_opacity + color_fs.r * opacity)*a9 + r*a1,
 		(bgcolor_fs.g * remaining_opacity + color_fs.g * opacity),//*a9 + g*a1,
