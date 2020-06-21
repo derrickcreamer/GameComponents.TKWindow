@@ -93,6 +93,71 @@ void main(){
 }
 ";
 		}
+		public static string Noise(){ //todo
+			return
+			@"#version 120
+uniform sampler2D texture;
+uniform int time; // todo, let's try 'frames', where one frame is 10ms so the math is easy.
+
+varying vec2 texcoord_fs;
+varying vec4 color_fs;
+varying vec4 bgcolor_fs;
+varying vec4 position_fs; //todo
+
+float noiseValue(vec2 p,int frame){
+	float t = float(frame)/100.0;
+	return fract(sin(p.x*100.0 + p.y*5433.0) * 7223.0);
+	//return fract(sin(p.x*100.0 + p.y*(5433.0 + sin(t))) * (7223.0 + cos(t)));
+	//return abs(abs(sin(abs(p.x*100.0 + p.y*5433.0 + t))) - abs(cos(abs(p.x*7311.1 + p.y*4174.0 + t))) );
+	//return sin(abs(p.x*100.0 + p.y*5433.0 + t)); // drifting lines of clouds version
+	//return fract(sin(p.x*311.0 + p.y*5782.0) * 18967.0);
+}
+
+float smoothNoise(vec2 uv,int frame){
+	vec2 lv = fract(uv);
+	vec2 cell = floor(uv);
+	lv = lv*lv*(3.0 - 2.0 * lv);
+	float BL = noiseValue(cell, frame);
+	float BR = noiseValue(cell + vec2(1.0, 0.0), frame);
+	float TL = noiseValue(cell + vec2(0.0, 1.0), frame);
+	float TR = noiseValue(cell + vec2(1.0, 1.0), frame);
+	float bottom = mix(BL, BR, lv.x);
+	float top = mix(TL, TR, lv.x);
+	return mix(bottom, top, lv.y);
+}
+
+float smoothNoise2(vec2 uv, int frame){
+	float c = smoothNoise(uv * 4.0, frame);
+	c += smoothNoise(uv * 8.0, frame) * 0.5;
+	c += smoothNoise(uv * 16.0, frame) * 0.25;
+	c += smoothNoise(uv * 32.0, frame) * 0.125;
+	c += smoothNoise(uv * 64.0, frame) * 0.0625;
+	return c / 2.0;
+}
+
+void main() {
+	vec2 uv = gl_FragCoord.xy / vec2(3840.0, 2160.0);
+	float c2 = smoothNoise2(uv, time);
+	float c3 = smoothNoise2(uv, time+10);
+	float c4 = mix(c2, c3, float((mod(time, 10.0))) / 10.0);
+	gl_FragColor = vec4(c2,c2,c2,1.0);
+	//gl_FragColor = vec4(c4,c4,c4,1.0);
+	return;
+	/*float n = fract(
+		sin(uv.x * 0.15125214 + uv.y * 3.364256243) * 5758.0123
+	);*/
+	float t = float(time/100); // seconds
+	float n = fract(
+		sin(uv.x * (t * 0.015125214) + uv.y * (t * 0.3364256243)) * 5758.0123257457
+	);
+	float t2 = float(time/100 + 1);
+	float n2 = fract(
+		sin(uv.x * (t2 * 0.015125214) + uv.y * (t2 * 0.3364256243)) * 5758.0123257457
+	);
+	float c = mix(n, n2, float(time)/100.0 - t);
+	gl_FragColor = vec4(n2,n2,n2, 1.0);
+}";
+		}
 		///<summary>Requires MSDF font texture. Returns a shader for the given texture size and pxRange.</summary>
 		public static string GetMsdfFS(int textureSize, int pxRange){
 			return
