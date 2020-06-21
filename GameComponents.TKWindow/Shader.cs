@@ -75,7 +75,7 @@ namespace GameComponents.TKWindow{
 				GL.AttachShader(shader_program,vertex_shader);
 				GL.AttachShader(shader_program,fragment_shader);
 				int attrib_index = 0;
-				foreach(string attr in new string[]{"position","texcoord","color","bgcolor"}){ //todo, this might need work to support more use cases
+				foreach(string attr in new string[]{"position_vs","texcoord_vs","color_vs","bgcolor_vs"}){ //todo, this might need work to support more use cases
 					GL.BindAttribLocation(shader_program,attrib_index++,attr);
 				}
 				GL.LinkProgram(shader_program);
