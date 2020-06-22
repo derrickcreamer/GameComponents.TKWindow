@@ -8,6 +8,7 @@ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTH
 WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.*/
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using OpenTK.Graphics.OpenGL;
 
 namespace GameComponents.TKWindow{
@@ -28,7 +29,8 @@ namespace GameComponents.TKWindow{
 		public static Shader Create(string frag_shader){
 			return Create(ShaderCollection.DefaultVS(),frag_shader);
 		}
-		public static Shader Create(string vert_shader,string frag_shader){
+		/// <param name="attribs">Optional. If specified, replaces the default attribs which are: position_vs, texcoord_vs, color_vs, bgcolor_vs</param>
+		public static Shader Create(string vert_shader, string frag_shader, IEnumerable<string> attribs = null){
 			Shader s = new Shader();
 			int vertex_shader = -1;
 			if(compiled_vs.ContainsKey(vert_shader)){
@@ -77,7 +79,8 @@ namespace GameComponents.TKWindow{
 				GL.AttachShader(shader_program,vertex_shader);
 				GL.AttachShader(shader_program,fragment_shader);
 				int attrib_index = 0;
-				foreach(string attr in new string[]{"position_vs","texcoord_vs","color_vs","bgcolor_vs"}){ //todo, this might need work to support more use cases
+				string[] attrs = attribs?.ToArray() ?? new string[]{"position_vs","texcoord_vs","color_vs","bgcolor_vs"};
+				foreach(string attr in attrs){
 					GL.BindAttribLocation(shader_program,attrib_index++,attr);
 				}
 				GL.LinkProgram(shader_program);

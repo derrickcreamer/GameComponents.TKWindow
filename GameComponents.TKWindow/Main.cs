@@ -81,7 +81,8 @@ namespace Todo{
 			Screen.gl.FinalResize += Screen.gl.DefaultHandleResize;
 			//Screen.textSurface = Surface.Create(Screen.gl, @"/home/void/Downloads/a-starry-msdf.png",TextureMinFilter.Nearest, TextureMagFilter.Linear, false,ShaderCollection.GetMsdfFS/*_todoplasma*/(2048, 1),false,2,4,4);
 			//Screen.textSurface = Surface.Create(Screen.gl, @"/home/void/Downloads/PxPlus_IBM_VGA9-msdf_smaller.png",TextureMinFilter.Nearest, TextureMagFilter.Linear,false,ShaderCollection.GetMsdfFS(2048, 2),false,2,4,4);
-			Screen.textSurface = Surface.Create(Screen.gl, @"/home/void/Downloads/PxPlus_IBM_VGA9-msdf_smaller.png",TextureMinFilter.Nearest, TextureMagFilter.Linear,false,ShaderCollection.Noise(),false,2,4,4);
+			//Screen.textSurface = Surface.Create(Screen.gl, @"/home/void/Downloads/PxPlus_IBM_VGA9-msdf_smaller.png",TextureMinFilter.Nearest, TextureMagFilter.Linear,false,ShaderCollection.Noise(),false,2,4,4);
+			Screen.textSurface = Surface.Create(Screen.gl, @"/home/void/Downloads/PxPlus_IBM_VGA9-msdf_smaller.png",TextureMinFilter.Nearest, TextureMagFilter.Linear,false,ShaderCollection.GetMsdfFS_Plasma(2048, 2),false,2,4,4);
 			Shader sh2 = Shader.Create(ShaderCollection.GetGrayscaleMsdfFS(2048, 1));
 			//Screen.textSurface = Surface.Create(Screen.gl, @"/home/void/Downloads/Iosevka-msdf.png",false,Shader.MsdfFS(),false,2,4,4);
 			//SpriteType.DefineSpriteAcross(Screen.textSurface, 28, 50, 51);

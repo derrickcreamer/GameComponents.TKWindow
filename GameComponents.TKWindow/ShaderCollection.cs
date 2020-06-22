@@ -28,7 +28,7 @@ attribute vec4 bgcolor_vs;
 varying vec2 texcoord;
 varying vec4 color;
 varying vec4 bgcolor;
-varying vec4 position; //todo clean up position in shader...decide how to do this. Probably just keep it all the time, and add time too.
+varying vec4 position;
 
 void main(){
  texcoord = texcoord_vs;
@@ -97,17 +97,18 @@ void main(){
 }
 ";
 		}
-		public static string Noise(){ //todo
+		///<summary>Half-implemented noise. Needs work.</summary>
+		public static string Noise(){
 			return
 			@"#version 120
 uniform sampler2D texture;
-uniform int time; // todo, let's try 'frames', where one frame is 10ms so the math is easy.
+uniform int time;
 uniform vec2 viewportSize;
 
 varying vec2 texcoord;
 varying vec4 color;
 varying vec4 bgcolor;
-varying vec4 position; //todo
+varying vec4 position;
 
 float noiseValue(vec2 p,int frame){
 	float t = float(frame)/100.0;
@@ -172,7 +173,7 @@ uniform sampler2D texture;
 varying vec2 texcoord;
 varying vec4 color;
 varying vec4 bgcolor;
-varying vec4 position; //todo
+varying vec4 position;
 
 float median(float r, float g, float b) {
 	return max(min(r, g), min(max(r, g), b));
@@ -193,17 +194,17 @@ void main() {
 		bgcolor.a * remaining_opacity + color.a * opacity);
 }";
 		}
-		///<summary>todo desc.Requires MSDF font texture. Returns a shader for the given texture size and pxRange.</summary>
-		public static string GetMsdfFS_todoplasma(int textureSize, int pxRange){
+		///<summary>Needs work. Plasma effect on top of MSDF font. </summary>
+		public static string GetMsdfFS_Plasma(int textureSize, int pxRange){
 			return
 			@"#version 120
 uniform sampler2D texture;
-uniform int time; // todo, let's try 'frames', where one frame is 10ms so the math is easy.
+uniform int time;
 
 varying vec2 texcoord;
 varying vec4 color;
 varying vec4 bgcolor;
-varying vec4 position; //todo
+varying vec4 position;
 
 const float PI = 3.1415926535897932384626433832795;
 
