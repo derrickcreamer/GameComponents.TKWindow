@@ -173,7 +173,6 @@ uniform sampler2D texture;
 varying vec2 texcoord;
 varying vec4 color;
 varying vec4 bgcolor;
-varying vec4 position;
 
 float median(float r, float g, float b) {
 	return max(min(r, g), min(max(r, g), b));

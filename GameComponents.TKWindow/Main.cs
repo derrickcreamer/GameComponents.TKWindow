@@ -73,17 +73,17 @@ namespace Todo{
 			Screen.gl.ViewportSizeRules = new ResizeRules{
 				//Constant = true, SnapWidth = 500, SnapHeight = 250,
 				//RatioRequirement = ResizeRules.RatioType.Exact, RatioWidth = 1, RatioHeight = 1
-				MinHeight = 1000, MinWidth = 1400
+				MinHeight = 600, MinWidth = 800
 			};
 			Screen.gl.NoShrinkToFit = true;
 			//Screen.gl.ResizingPreference = ResizeOption.SnapWindow; Screen.gl.SnapHeight = Screen.gl.SnapWidth = 100;//todo //ResizeOption.StretchToFit;
 			//Screen.gl.ResizingFullScreenPreference = ResizeOption.AddBorder;
-			Screen.gl.FinalResize += Screen.gl.DefaultHandleResize;
+			Screen.gl.HandleResize += Screen.gl.DefaultHandleResize;
 			//Screen.textSurface = Surface.Create(Screen.gl, @"/home/void/Downloads/a-starry-msdf.png",TextureMinFilter.Nearest, TextureMagFilter.Linear, false,ShaderCollection.GetMsdfFS/*_todoplasma*/(2048, 1),false,2,4,4);
 			//Screen.textSurface = Surface.Create(Screen.gl, @"/home/void/Downloads/PxPlus_IBM_VGA9-msdf_smaller.png",TextureMinFilter.Nearest, TextureMagFilter.Linear,false,ShaderCollection.GetMsdfFS(2048, 2),false,2,4,4);
 			//Screen.textSurface = Surface.Create(Screen.gl, @"/home/void/Downloads/PxPlus_IBM_VGA9-msdf_smaller.png",TextureMinFilter.Nearest, TextureMagFilter.Linear,false,ShaderCollection.Noise(),false,2,4,4);
-			Screen.textSurface = Surface.Create(Screen.gl, @"/home/void/Downloads/PxPlus_IBM_VGA9-msdf_smaller.png",TextureMinFilter.Nearest, TextureMagFilter.Linear,false,ShaderCollection.GetMsdfFS_Plasma(2048, 2),false,2,4,4);
-			Shader sh2 = Shader.Create(ShaderCollection.GetGrayscaleMsdfFS(2048, 1));
+			Screen.textSurface = Surface.Create(Screen.gl, @"/home/void/Downloads/PxPlus_IBM_VGA9-msdf_smaller.png",TextureMinFilter.Nearest, TextureMagFilter.Linear,false,ShaderCollection.GetMsdfFS(2048, 4),false,2,4,4);
+			Shader sh2 = Shader.Create(ShaderCollection.GetGrayscaleMsdfFS(2048, 4));
 			//Screen.textSurface = Surface.Create(Screen.gl, @"/home/void/Downloads/Iosevka-msdf.png",false,Shader.MsdfFS(),false,2,4,4);
 			//SpriteType.DefineSpriteAcross(Screen.textSurface, 28, 50, 51);
 			//Screen.textSurface.texture.Sprite.Add(Get8x8FontSprite());
@@ -108,6 +108,9 @@ namespace Todo{
 				if(Screen.gl.IsExiting || Screen.gl.KeyIsDown(Key.Escape)){
 					Screen.gl.Close();
 					return;
+				}
+				else if(Screen.gl.KeyIsDown(Key.ShiftLeft)){
+					Screen.gl.Viewport = new System.Drawing.Rectangle(Screen.gl.Viewport.X, Screen.gl.Viewport.Y, Screen.gl.Viewport.Width-4, Screen.gl.Viewport.Height-4);
 				}
 				else if(Screen.gl.KeyIsDown(Key.W)){
 					Screen.gl.Viewport = new System.Drawing.Rectangle(Screen.gl.Viewport.X, Screen.gl.Viewport.Y, Screen.gl.Viewport.Width-4, Screen.gl.Viewport.Height-4);
@@ -433,7 +436,7 @@ namespace Todo{
 			Screen.gl = new GLWindow(width_px,height_px,"msdf font test");
 			//Screen.gl.ResizingPreference = ResizeOption.StretchToFit;
 			//Screen.gl.ResizingFullScreenPreference = ResizeOption.AddBorder;
-			Screen.gl.FinalResize += Screen.gl.DefaultHandleResize;
+			Screen.gl.HandleResize += Screen.gl.DefaultHandleResize;
 			//Screen.textSurface = Surface.Create(Screen.gl, @"/home/void/Downloads/PxPlus_IBM_VGA9-msdf_smaller.png",false,ShaderCollection.MsdfFS(),false,2,4,4);
 			//Screen.textSurface = Surface.Create(Screen.gl, @"/home/void/Downloads/Iosevka-msdf.png",false,Shader.MsdfFS(),false,2,4,4);
 			//SpriteType.DefineSpriteAcross(Screen.textSurface, 24, 240,2);

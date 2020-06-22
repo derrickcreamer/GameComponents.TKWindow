@@ -29,11 +29,11 @@ namespace GameComponents.TKWindow{
 		protected bool Resizing;
 
 		protected FrameEventArgs render_args = new FrameEventArgs();
-		protected Dictionary<Key,bool> key_down = new Dictionary<Key,bool>(); // todo - decide if these few input things should be here or not. Are they useful, or is it going to be necessary to inherit from this class anyway?
+		protected Dictionary<Key,bool> key_down = new Dictionary<Key,bool>();
 		protected bool DepthTestEnabled;
 		protected int LastShaderID = -1;
 
-		public Action FinalResize; //todo name?
+		public Action HandleResize;
 		protected Rectangle internalViewport;
 		public Rectangle Viewport{ get{ return internalViewport; }
 			set{
@@ -71,14 +71,13 @@ namespace GameComponents.TKWindow{
 			GL.EnableVertexAttribArray(1);
 			KeyDown += KeyDownHandler;
 			KeyUp += KeyUpHandler;
-			//Keyboard.KeyRepeat = true;
 			internalViewport = new Rectangle(0,0,w,h);
-			FinalResize = DefaultHandleResize;
+			HandleResize = DefaultHandleResize;
 			Timer = new Stopwatch();
 			Timer.Start();
 		}
 		public bool FullScreen => this.WindowState == WindowState.Fullscreen;
-		protected virtual void KeyDownHandler(object sender,KeyboardKeyEventArgs args){ // todo, keeping or not? see input note above.
+		protected virtual void KeyDownHandler(object sender,KeyboardKeyEventArgs args){
 			key_down[args.Key] = true;
 		}
 		protected virtual void KeyUpHandler(object sender,KeyboardKeyEventArgs args){
@@ -137,7 +136,7 @@ namespace GameComponents.TKWindow{
 				return false;
 			}
 			if(Resizing){
-				FinalResize?.Invoke();
+				HandleResize?.Invoke();
 				Resizing = false;
 			}
 			DrawSurfaces();
