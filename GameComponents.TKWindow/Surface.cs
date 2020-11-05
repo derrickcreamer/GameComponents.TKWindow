@@ -25,16 +25,21 @@ namespace GameComponents.TKWindow{
 		public bool Disabled = false;
 		public Surface(){} //todo - surface creation needs to be cleaned up, with a better way to specify all options, so for now I'm making the ctor public as a fallback
 		public static Surface Create(GLWindow window,string texture_filename,params int[] vertex_attrib_counts){
-			return Create(window,texture_filename,TextureMinFilter.Nearest, TextureMagFilter.Nearest,false,ShaderCollection.DefaultFS(),false,vertex_attrib_counts);
+			return Create(window,texture_filename,TextureMinFilter.Nearest, TextureMagFilter.Nearest,TextureLoadSource.FromFilePath,null,ShaderCollection.DefaultFS(),false,vertex_attrib_counts);
 		}
-		public static Surface Create(GLWindow window,string texture_filename, TextureMinFilter minFilter,TextureMagFilter magFilter, bool loadTextureFromEmbeddedResource,string frag_shader,bool has_depth,params int[] vertex_attrib_counts){
+		///<param name="filename">Note that filename is required even if passing a byte[], because filename is used as the key to identify duplicate textures</param>
+		///<param name="source">Whether to load the texture from file path, from an embedded resource in the entry assembly, or from 'textureBytes'</param>
+		///<param name="textureBytes">Used only if source == TextureLoadSource.FromByteArray</param>
+		public static Surface Create(GLWindow window,string texture_filename, TextureMinFilter minFilter,TextureMagFilter magFilter,
+			TextureLoadSource source,byte[] textureBytes,string frag_shader,bool has_depth,params int[] vertex_attrib_counts)
+		{
 			Surface s = new Surface();
 			s.window = window;
 			int dims = has_depth? 3 : 2;
 			s.UseDepthBuffer = has_depth;
 			VertexAttributes attribs = VertexAttributes.Create(vertex_attrib_counts);
 			s.vbo = VBO.Create(dims,attribs);
-			s.texture = Texture.Create(texture_filename,null,minFilter,magFilter,loadTextureFromEmbeddedResource);
+			s.texture = Texture.Create(texture_filename,null,minFilter,magFilter,source,textureBytes);
 			s.shader = Shader.Create(frag_shader);
 			if(window != null){
 				window.Surfaces.Add(s);

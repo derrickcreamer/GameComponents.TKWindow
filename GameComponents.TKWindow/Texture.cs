@@ -15,6 +15,7 @@ using OpenTK.Graphics.OpenGL;
 
 
 namespace GameComponents.TKWindow{
+	public enum TextureLoadSource { FromFilePath, FromEmbedded, FromByteArray };
 	public class Texture{
 		public int TextureIndex;
 		public int TextureHeightPx;
@@ -25,14 +26,20 @@ namespace GameComponents.TKWindow{
 		protected static int next_texture = 0;
 		protected static int max_textures = -1; //Currently, max_textures serves only to crash in a better way. Eventually I'll figure out how to swap texture units around, todo!
 		protected static Dictionary<string,Texture> texture_info = new Dictionary<string,Texture>(); //the Textures contained herein are used only to store index/height/width
-		public static Texture Create(string filename, string filenameOfTextureToReplace = null, TextureMinFilter minFilter = TextureMinFilter.Nearest, TextureMagFilter magFilter = TextureMagFilter.Nearest, bool loadFromEmbeddedResource = false){
+		///<param name="filename">Note that filename is required even if passing a byte[], because filename is used as the key to identify duplicate textures</param>
+		///<param name="textureBytes">Used only if source == TextureLoadSource.FromByteArray</param>
+		public static Texture Create(string filename, string filenameOfTextureToReplace = null, TextureMinFilter minFilter = TextureMinFilter.Nearest,
+			TextureMagFilter magFilter = TextureMagFilter.Nearest, TextureLoadSource source = TextureLoadSource.FromFilePath, byte[] textureBytes = null)
+		{
 			Texture t = new Texture();
 			t.Sprite = new List<SpriteType>();
-			t.LoadTexture(filename, filenameOfTextureToReplace, minFilter, magFilter, loadFromEmbeddedResource);
+			t.LoadTexture(filename, filenameOfTextureToReplace, minFilter, magFilter, source, textureBytes);
 			return t;
 		}
 		protected Texture(){}
-		protected void LoadTexture(string filename, string filenameOfTextureToReplace = null, TextureMinFilter minFilter = TextureMinFilter.Nearest, TextureMagFilter magFilter = TextureMagFilter.Nearest, bool loadFromEmbeddedResource = false){
+		protected void LoadTexture(string filename, string filenameOfTextureToReplace = null, TextureMinFilter minFilter = TextureMinFilter.Nearest,
+			TextureMagFilter magFilter = TextureMagFilter.Nearest, TextureLoadSource source = TextureLoadSource.FromFilePath, byte[] textureBytes = null)
+		{
 			if(String.IsNullOrEmpty(filename)){
 				throw new ArgumentException(filename);
 			}
@@ -61,8 +68,14 @@ namespace GameComponents.TKWindow{
 				int id = GL.GenTexture(); //todo: eventually i'll want to support more than 16 or 32 textures. At that time I'll need to store this ID somewhere.
 				GL.BindTexture(TextureTarget.Texture2D,id); //maybe a list of Scenes which are lists of textures needed, and then i'll bind all those and make sure to track their texture units.
 				Bitmap bmp;
-				if(loadFromEmbeddedResource){
-					bmp = new Bitmap(Assembly.GetExecutingAssembly().GetManifestResourceStream(filename));
+				if(source == TextureLoadSource.FromEmbedded){
+					bmp = new Bitmap(Assembly.GetEntryAssembly().GetManifestResourceStream(filename));
+				}
+				else if(source == TextureLoadSource.FromByteArray){
+					if(textureBytes == null) throw new ArgumentNullException(nameof(textureBytes));
+					using(System.IO.MemoryStream ms = new System.IO.MemoryStream(textureBytes)){
+						bmp = new Bitmap(ms);
+					}
 				}
 				else{
 					bmp = new Bitmap(filename);
