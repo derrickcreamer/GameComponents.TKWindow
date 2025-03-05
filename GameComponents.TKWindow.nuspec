@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
   <metadata>
     <id>GameComponents.TKWindow</id>
-    <version>0.7.1</version>
+    <version>0.8.0</version>
     <title>GameComponents TKWindow</title>
     <authors>Derrick Creamer</authors>
     <owners>Derrick Creamer</owners>
@@ -11,17 +11,17 @@
     <projectUrl>https://github.com/derrickcreamer/GameComponents.TKWindow</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>Classes designed to make working with OpenTK GameWindow easier</description>
-    <copyright>Copyright 2020</copyright>
+    <copyright>Copyright 2025</copyright>
     <tags>c# csharp opentk</tags>
     <dependencies>
-      <dependency id="OpenTK" version="3.2.0" />
+      <group targetFramework="net8.0">
+        <dependency id="OpenTK" version="4.9.3" />
+        <dependency id="StbImageSharp" version="2.30.15" />
+	  </group>
     </dependencies>
-    <references>
-      <reference file="GameComponents.TKWindow.dll" />
-    </references>
   </metadata>
   <files>
-    <file src="GameComponents.TKWindow/bin/Debug/GameComponents.TKWindow.dll" target="lib" />
+    <file src="GameComponents.TKWindow/bin/Debug/net8.0/GameComponents.TKWindow.dll" target="lib/net8.0" />
   </files>
 </package>
 

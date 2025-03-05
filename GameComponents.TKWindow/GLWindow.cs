@@ -9,11 +9,12 @@ WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN 
 using System;
 using System.Drawing;
 using System.Collections.Generic;
-using OpenTK;
-using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
-using OpenTK.Input;
 using System.Diagnostics;
+using OpenTK.Windowing.Desktop;
+using OpenTK.Windowing.Common;
+using OpenTK.Windowing.GraphicsLibraryFramework;
+using OpenTK.Mathematics;
 
 namespace GameComponents.TKWindow{
 	public class GLWindow : GameWindow{
@@ -29,7 +30,7 @@ namespace GameComponents.TKWindow{
 		protected bool Resizing;
 
 		protected FrameEventArgs render_args = new FrameEventArgs();
-		protected Dictionary<Key,bool> key_down = new Dictionary<Key,bool>();
+		protected Dictionary<Keys,bool> key_down = new Dictionary<Keys,bool>();
 		protected bool DepthTestEnabled;
 		protected int LastShaderID = -1;
 
@@ -64,7 +65,12 @@ namespace GameComponents.TKWindow{
 				}
 			}
 		}
-		public GLWindow(int w,int h,string title) : base(w,h,GraphicsMode.Default,title){
+		public GLWindow(int w,int h,string title) : base(new GameWindowSettings(),
+			new NativeWindowSettings{
+				ClientSize = new Vector2i(w, h),
+				Title = title
+			})
+		{
 			VSync = VSyncMode.On;
 			GL.ClearColor(0.0f,0.0f,0.0f,0.0f);
 			GL.EnableVertexAttribArray(0); //these 2 attrib arrays are always on, for position and texcoords.
@@ -77,13 +83,13 @@ namespace GameComponents.TKWindow{
 			Timer.Start();
 		}
 		public bool FullScreen => this.WindowState == WindowState.Fullscreen;
-		protected virtual void KeyDownHandler(object sender,KeyboardKeyEventArgs args){
+		protected virtual void KeyDownHandler(KeyboardKeyEventArgs args){
 			key_down[args.Key] = true;
 		}
-		protected virtual void KeyUpHandler(object sender,KeyboardKeyEventArgs args){
+		protected virtual void KeyUpHandler(KeyboardKeyEventArgs args){
 			key_down[args.Key] = false;
 		}
-		public bool KeyIsDown(Key key){
+		public bool KeyIsDown(Keys key){
 			bool value;
 			key_down.TryGetValue(key,out value);
 			return value;
@@ -92,24 +98,27 @@ namespace GameComponents.TKWindow{
 			e.Cancel = NoClose;
 			base.OnClosing(e);
 		}
-		protected override void OnFocusedChanged(EventArgs e){
+		protected override void OnFocusedChanged(FocusedChangedEventArgs e){
 			base.OnFocusedChanged(e);
-			if(Focused){
+			if(IsFocused){
 				key_down.Clear();
 			}
 		}
-		protected override void OnResize(EventArgs e){
+		protected override void OnResize(ResizeEventArgs e){
 			Resizing = true;
 		}
-		protected override void OnWindowStateChanged(EventArgs e){
+		protected override void OnMaximized(MaximizedEventArgs e){
+			Resizing = true;
+		}
+		protected override void OnMinimized(MinimizedEventArgs e){
 			Resizing = true;
 		}
 		public void DefaultHandleResize(){
-			Size windowSize = ClientSize;
+			Size windowSize = (Size)ClientSize;
 			if(!FullScreen && WindowSizeRules != null){
 				Size newSize = WindowSizeRules.CalculateResize(windowSize);
-				if(newSize != windowSize) ClientSize = newSize;
-				windowSize = ClientSize;
+				if(newSize != windowSize) ClientSize = new Vector2i(newSize.Width, newSize.Height);
+				windowSize = (Size)ClientSize;
 			}
 			Size viewportSize = ViewportSizeRules?.CalculateResize(windowSize) ?? windowSize;
 			if(!NoShrinkToFit){
@@ -131,7 +140,7 @@ namespace GameComponents.TKWindow{
 			Resizing = true;
 		}
 		public bool WindowUpdate(){
-			ProcessEvents();
+			ProcessEvents(0.1);
 			if(IsExiting){
 				return false;
 			}

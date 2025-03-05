@@ -9,9 +9,9 @@ WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN 
 using System;
 using System.Collections.Generic;
 using System.Reflection;
-using System.Drawing;
-using System.Drawing.Imaging;
+using StbImageSharp;
 using OpenTK.Graphics.OpenGL;
+using System.IO;
 
 
 namespace GameComponents.TKWindow{
@@ -67,31 +67,29 @@ namespace GameComponents.TKWindow{
 				GL.ActiveTexture(TextureUnit.Texture0 + num);
 				int id = GL.GenTexture(); //todo: eventually i'll want to support more than 16 or 32 textures. At that time I'll need to store this ID somewhere.
 				GL.BindTexture(TextureTarget.Texture2D,id); //maybe a list of Scenes which are lists of textures needed, and then i'll bind all those and make sure to track their texture units.
-				Bitmap bmp;
+				Stream stream;
 				if(source == TextureLoadSource.FromEmbedded){
-					bmp = new Bitmap(Assembly.GetEntryAssembly().GetManifestResourceStream(filename));
+					stream = Assembly.GetEntryAssembly().GetManifestResourceStream(filename);
 				}
 				else if(source == TextureLoadSource.FromByteArray){
 					if(textureBytes == null) throw new ArgumentNullException(nameof(textureBytes));
-					using(System.IO.MemoryStream ms = new System.IO.MemoryStream(textureBytes)){
-						bmp = new Bitmap(ms);
-					}
+					stream = new MemoryStream(textureBytes);
 				}
 				else{
-					bmp = new Bitmap(filename);
+					stream = File.OpenRead(filename);
 				}
-				BitmapData bmp_data = bmp.LockBits(new Rectangle(0,0,bmp.Width,bmp.Height),ImageLockMode.ReadOnly,System.Drawing.Imaging.PixelFormat.Format32bppArgb);
-				GL.TexImage2D(TextureTarget.Texture2D,0,PixelInternalFormat.Rgba,bmp_data.Width,bmp_data.Height,0,OpenTK.Graphics.OpenGL.PixelFormat.Bgra,PixelType.UnsignedByte,bmp_data.Scan0);
-				bmp.UnlockBits(bmp_data);
+				StbImage.stbi_set_flip_vertically_on_load(1);
+				ImageResult image = ImageResult.FromStream(stream, ColorComponents.RedGreenBlueAlpha);
+				GL.TexImage2D(TextureTarget.Texture2D,0,PixelInternalFormat.Rgba,image.Width,image.Height,0,OpenTK.Graphics.OpenGL.PixelFormat.Bgra,PixelType.UnsignedByte,image.Data);
 				GL.TexParameter(TextureTarget.Texture2D,TextureParameterName.TextureMinFilter,(int)minFilter);
 				GL.TexParameter(TextureTarget.Texture2D,TextureParameterName.TextureMagFilter,(int)magFilter);
 				TextureIndex = num;
-				TextureHeightPx = bmp.Height;
-				TextureWidthPx = bmp.Width;
+				TextureHeightPx = image.Height;
+				TextureWidthPx = image.Width;
 				Texture t = new Texture(); //this one goes into the dictionary as an easy way to store the index/height/width of this filename.
 				t.TextureIndex = num;
-				t.TextureHeightPx = bmp.Height;
-				t.TextureWidthPx = bmp.Width;
+				t.TextureHeightPx = image.Height;
+				t.TextureWidthPx = image.Width;
 				texture_info.Add(filename,t);
 			}
 		}
