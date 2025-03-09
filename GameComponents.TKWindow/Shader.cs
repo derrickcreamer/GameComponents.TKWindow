@@ -86,7 +86,7 @@ namespace GameComponents.TKWindow{
 				GL.LinkProgram(shader_program);
 				s.ShaderProgramID = shader_program;
 				s.OffsetUniformLocation = GL.GetUniformLocation(shader_program,"offset");
-				s.TextureUniformLocation = GL.GetUniformLocation(shader_program,"texture");
+				s.TextureUniformLocation = GL.GetUniformLocation(shader_program,"texture0");
 				s.TimeUniformLocation = GL.GetUniformLocation(shader_program,"time");
 				s.ViewportSizeUniformLocation = GL.GetUniformLocation(shader_program, "viewportSize");
 				if(compiled_vs[vert_shader].programs == null){

@@ -65,14 +65,16 @@ namespace GameComponents.TKWindow{
 				}
 			}
 		}
-		public GLWindow(int w,int h,string title) : base(new GameWindowSettings(),
+		public GLWindow(int w,int h,string title) : base(GameWindowSettings.Default,
 			new NativeWindowSettings{
 				ClientSize = new Vector2i(w, h),
-				Title = title
+				Title = title,
 			})
 		{
 			VSync = VSyncMode.On;
-			GL.ClearColor(0.0f,0.0f,0.0f,0.0f);
+			GL.ClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+			int vertexArrayObject = GL.GenVertexArray();
+			GL.BindVertexArray(vertexArrayObject);
 			GL.EnableVertexAttribArray(0); //these 2 attrib arrays are always on, for position and texcoords.
 			GL.EnableVertexAttribArray(1);
 			KeyDown += KeyDownHandler;
@@ -140,7 +142,7 @@ namespace GameComponents.TKWindow{
 			Resizing = true;
 		}
 		public bool WindowUpdate(){
-			ProcessEvents(0.1);
+			ProcessWindowEvents(false);
 			if(IsExiting){
 				return false;
 			}

@@ -29,16 +29,18 @@ namespace GameComponents.TKWindow{
 		///<param name="filename">Note that filename is required even if passing a byte[], because filename is used as the key to identify duplicate textures</param>
 		///<param name="textureBytes">Used only if source == TextureLoadSource.FromByteArray</param>
 		public static Texture Create(string filename, string filenameOfTextureToReplace = null, TextureMinFilter minFilter = TextureMinFilter.Nearest,
-			TextureMagFilter magFilter = TextureMagFilter.Nearest, TextureLoadSource source = TextureLoadSource.FromFilePath, byte[] textureBytes = null)
+			TextureMagFilter magFilter = TextureMagFilter.Nearest, TextureLoadSource source = TextureLoadSource.FromFilePath, byte[] textureBytes = null,
+			bool flipTextureVertically = false)
 		{
 			Texture t = new Texture();
 			t.Sprite = new List<SpriteType>();
-			t.LoadTexture(filename, filenameOfTextureToReplace, minFilter, magFilter, source, textureBytes);
+			t.LoadTexture(filename, filenameOfTextureToReplace, minFilter, magFilter, source, textureBytes, flipTextureVertically);
 			return t;
 		}
 		protected Texture(){}
 		protected void LoadTexture(string filename, string filenameOfTextureToReplace = null, TextureMinFilter minFilter = TextureMinFilter.Nearest,
-			TextureMagFilter magFilter = TextureMagFilter.Nearest, TextureLoadSource source = TextureLoadSource.FromFilePath, byte[] textureBytes = null)
+			TextureMagFilter magFilter = TextureMagFilter.Nearest, TextureLoadSource source = TextureLoadSource.FromFilePath, byte[] textureBytes = null,
+			bool flipTextureVertically = false)
 		{
 			if(String.IsNullOrEmpty(filename)){
 				throw new ArgumentException(filename);
@@ -78,9 +80,13 @@ namespace GameComponents.TKWindow{
 				else{
 					stream = File.OpenRead(filename);
 				}
-				StbImage.stbi_set_flip_vertically_on_load(1);
+				StbImage.stbi_set_flip_vertically_on_load(flipTextureVertically? 1 : 0);
 				ImageResult image = ImageResult.FromStream(stream, ColorComponents.RedGreenBlueAlpha);
-				GL.TexImage2D(TextureTarget.Texture2D,0,PixelInternalFormat.Rgba,image.Width,image.Height,0,OpenTK.Graphics.OpenGL.PixelFormat.Bgra,PixelType.UnsignedByte,image.Data);
+				try{
+					stream.Dispose();
+				}
+				catch { } // Swallow exceptions
+				GL.TexImage2D(TextureTarget.Texture2D,0,PixelInternalFormat.Rgba,image.Width,image.Height,0,PixelFormat.Rgba,PixelType.UnsignedByte,image.Data);
 				GL.TexParameter(TextureTarget.Texture2D,TextureParameterName.TextureMinFilter,(int)minFilter);
 				GL.TexParameter(TextureTarget.Texture2D,TextureParameterName.TextureMagFilter,(int)magFilter);
 				TextureIndex = num;

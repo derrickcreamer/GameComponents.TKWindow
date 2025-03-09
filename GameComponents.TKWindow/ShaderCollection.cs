@@ -43,12 +43,12 @@ void main(){
 		public static string DefaultFS(){ //todo: I could make a builder for these, kinda. It could make things like alpha testing optional.
 			return
 @"#version 120
-uniform sampler2D texture;
+uniform sampler2D texture0;
 
 varying vec2 texcoord;
 
 void main(){
- vec4 v = texture2D(texture,texcoord);
+ vec4 v = texture2D(texture0,texcoord);
  if(v.a < 0.1){
   discard;
  }
@@ -60,14 +60,14 @@ void main(){
 		public static string FontFS(){
 			return
 @"#version 120
-uniform sampler2D texture;
+uniform sampler2D texture0;
 
 varying vec2 texcoord;
 varying vec4 color;
 varying vec4 bgcolor;
 
 void main(){
- vec4 v = texture2D(texture,texcoord);
+ vec4 v = texture2D(texture0,texcoord);
  if(v.r == 1.0 && v.g == 1.0 && v.b == 1.0){
   gl_FragColor = color;
  }
@@ -81,14 +81,14 @@ void main(){
 		public static string AAFontFS(){
 			return
 				@"#version 120
-uniform sampler2D texture;
+uniform sampler2D texture0;
 
 varying vec2 texcoord;
 varying vec4 color;
 varying vec4 bgcolor;
 
 void main(){
- vec4 v = texture2D(texture,texcoord);
+ vec4 v = texture2D(texture0,texcoord);
  gl_FragColor = vec4(
 	 bgcolor.r * (1.0 - v.a) + color.r * v.a,
 	 bgcolor.g * (1.0 - v.a) + color.g * v.a,
@@ -101,7 +101,7 @@ void main(){
 		public static string Noise(){
 			return
 			@"#version 120
-uniform sampler2D texture;
+uniform sampler2D texture0;
 uniform int time;
 uniform vec2 viewportSize;
 
@@ -167,12 +167,12 @@ void main() {
 		///<summary>Requires MSDF font texture. Returns a shader for the given texture size and pxRange.</summary>
 		public static string GetMsdfFS(int textureSize, int pxRange){
 			return
-			@"#version 120
-uniform sampler2D texture;
+			@"#version 330
+uniform sampler2D texture0;
 
-varying vec2 texcoord;
-varying vec4 color;
-varying vec4 bgcolor;
+in vec2 texcoord;
+in vec4 color;
+in vec4 bgcolor;
 
 float median(float r, float g, float b) {
 	return max(min(r, g), min(max(r, g), b));
@@ -181,7 +181,7 @@ float median(float r, float g, float b) {
 void main() {
 	float pxRange = " + pxRange.ToString() + @".0;
 	vec2 texture_size = vec2(" + textureSize.ToString() + @".0, " + textureSize.ToString() + @".0);
-	vec3 sample = texture2D(texture, texcoord).rgb;
+	vec3 sample = texture(texture0, texcoord).rgb;
 	float sigDist = (median(sample.r, sample.g, sample.b) - 0.5);
 	sigDist *= dot(pxRange/texture_size, 0.5/fwidth(texcoord));
 	float opacity = clamp(sigDist + 0.5, 0.0, 1.0);
@@ -197,7 +197,7 @@ void main() {
 		public static string GetMsdfFS_Plasma(int textureSize, int pxRange){
 			return
 			@"#version 120
-uniform sampler2D texture;
+uniform sampler2D texture0;
 uniform int time;
 
 varying vec2 texcoord;
@@ -214,7 +214,7 @@ float median(float r, float g, float b) {
 void main() {
 	float pxRange = " + pxRange.ToString() + @".0;
 	vec2 texture_size = vec2(" + textureSize.ToString() + @".0, " + textureSize.ToString() + @".0);
-	vec3 sample = texture2D(texture, texcoord).rgb;
+	vec3 sample = texture2D(texture0, texcoord).rgb;
 	float sigDist = median(sample.r, sample.g, sample.b) - 0.5;
 	sigDist *= dot(pxRange/texture_size, 0.5/fwidth(texcoord));
 	float opacity = clamp(sigDist + 0.5, 0.0, 1.0);
@@ -305,7 +305,7 @@ b = (b+d4)/2.0;
 		public static string GetGrayscaleMsdfFS(int textureSize, int pxRange){
 			return
 			@"#version 120
-uniform sampler2D texture;
+uniform sampler2D texture0;
 
 varying vec2 texcoord;
 varying vec4 color;
@@ -318,7 +318,7 @@ float median(float r, float g, float b) {
 void main() {
 	float pxRange = " + pxRange.ToString() + @".0;
 	vec2 texture_size = vec2(" + textureSize.ToString() + @".0, " + textureSize.ToString() + @".0);
-	vec3 sample = texture2D(texture, texcoord).rgb;
+	vec3 sample = texture2D(texture0, texcoord).rgb;
 	float sigDist = median(sample.r, sample.g, sample.b) - 0.5;
 	sigDist *= dot(pxRange/texture_size, 0.5/fwidth(texcoord));
 	float opacity = clamp(sigDist + 0.5, 0.0, 1.0);
@@ -336,13 +336,13 @@ void main() {
 		public static string TintFS(){
 			return
 @"#version 120
-uniform sampler2D texture;
+uniform sampler2D texture0;
 
 varying vec2 texcoord;
 varying vec4 color;
 
 void main(){
- vec4 v = texture2D(texture,texcoord);
+ vec4 v = texture2D(texture0,texcoord);
  if(v.a < 0.1){
   discard;
  }
@@ -359,14 +359,14 @@ void main(){
 		public static string NewTintFS(){
 			return
 				@"#version 120
-uniform sampler2D texture;
+uniform sampler2D texture0;
 
 varying vec2 texcoord;
 varying vec4 color;
 varying vec4 bgcolor;
 
 void main(){
- vec4 v = texture2D(texture,texcoord);
+ vec4 v = texture2D(texture0,texcoord);
  if(v.a < 0.1){
   discard;
  }
@@ -382,12 +382,12 @@ void main(){
 		public static string GrayscaleFS(){
 			return
 @"#version 120
-uniform sampler2D texture;
+uniform sampler2D texture0;
 
 varying vec2 texcoord;
 
 void main(){
- vec4 v = texture2D(texture,texcoord);
+ vec4 v = texture2D(texture0,texcoord);
  if(v.a < 0.1){
   discard;
  }
@@ -400,12 +400,12 @@ void main(){
 		public static string GrayscaleWithColorsFS(){
 			return
 @"#version 120
-uniform sampler2D texture;
+uniform sampler2D texture0;
 
 varying vec2 texcoord;
 
 void main(){
- vec4 v = texture2D(texture,texcoord);
+ vec4 v = texture2D(texture0,texcoord);
  if(v.a < 0.1){
   discard;
  }
